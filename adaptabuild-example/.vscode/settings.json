@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "dbglog.h": "c"
+    },
+    "docker.commands.attach": "${containerCommand} exec -it ${containerId} ${shellCommand}",
+    "docker.commands.build": "${containerCommand} build --pull --rm -f \"${dockerfile}\" -t ${tag} \"${context}\"",
+    "docker.commands.run": "${containerCommand} run --rm -d ${exposedPorts} ${tag}"
+}

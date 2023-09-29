@@ -10,7 +10,8 @@ ARG USER_GID=$USER_UID
 
 # Create the user
 RUN groupadd --gid $USER_GID $USERNAME && \
-    useradd --uid $USER_UID --gid $USER_GID -d /home/$USERNAME -m -k /etc/skel -s /usr/bin/bash $USERNAME
+    useradd --uid $USER_UID --gid $USER_GID -d /home/$USERNAME -m -s /usr/bin/bash $USERNAME
+# -k /etc/skel
 # && \
 #    mkdir -p /home/$USERNAME/projects/adaptabuild-example && \
 #    chown $USERNAME:$USERNAME /home/$USERNAME/projects/adaptabuild-example

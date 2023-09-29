@@ -63,7 +63,7 @@
 // The workspace should later become /workspace, but we need to copy the .vscode folder
 // in there to get the launch.json and tasks.json visible
   "workspaceMount": "source=${localWorkspaceFolder},target=/home/adaptabuild,type=bind,consistency=cached",
-  "workspaceFolder": "/home",
+  "workspaceFolder": "/home/adaptabuild",
 //  "workspaceFolder": "/workspace",
 
   "mounts": [

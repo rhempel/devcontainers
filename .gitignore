@@ -1,0 +1,6 @@
+# Ignore files and folders created by VSCode
+
+**/.cache
+**/.gitconfig
+**/.cortex-debug
+**/.vscode-server

@@ -4,3 +4,8 @@
 **/.gitconfig
 **/.cortex-debug
 **/.vscode-server
+**/.bash_history
+**/.gnupg/
+**/.lesshst
+**/.local/
+**/.viminfo

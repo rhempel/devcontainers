@@ -1,81 +1,55 @@
-//Add details here
-
 {
-//  "image": "rust:1-slim-bullseye",
   "name" : "adaptabuild",
-//"forwardPorts": [8000],
-  
-  "containerEnv": [
-  ],
-
-  "remoteEnv": [
-  ],
 
   "build": {
-    "dockerfile": "Dockerfile"
-//    "context": "..",
-//    // Update 'VARIANT' to pick a Python version. Rebuild the container 
-//    // if it already exists to update. Available variants: 3, 3.6, 3.7, 3.8 
-//     "args": { "MY_USER": "$(id -un)",
-//               "MY_UID": "$(id -u)",
-//               "MY_GID": "$(id -g)",
-//             }
+    "dockerfile": "Dockerfile",
   },
 
+  // This line is the key to accessing the GDB server on the host machine
+  // when running Docker on a Windows machine.
+  //
+  // See .vscode/launch.json for details
+
   "runArgs": [
-    "--privileged",
-//  "--device=/dev/stlinkv2-1_1",
-//  "--device=/dev/ttyACM0",
-//  "--device=/dev/hid-microbit"
-//  "--device=/dev/hidraw1"
+    "--add-host=host.gdb.gateway:host-gateway",
   ],
-  
+
+  // Add VSCode extensions to the container
+
   "customizations": {
     "vscode": {
       "extensions": [
-		"ms-vscode.cpptools",
-		"marus25.cortex-debug",
-		"mcu-debug.debug-tracker-vscode",
-		"mcu-debug.memory-view",
-		"mcu-debug.rtos-views",
-		"mcu-debug.peripheral-viewer",
-		"ms-vscode.live-server"
-	],
-      "settings" : {
-//        "cortex-debug.gdbPath": "/usr/bin/gdb-multiarch",
-      }
-    }
+		    "ms-vscode.cpptools",
+		    "mcu-debug.debug-tracker-vscode",
+		    "mcu-debug.memory-view",
+		    "mcu-debug.rtos-views",
+		    "mcu-debug.peripheral-viewer",
+		    "ms-vscode.live-server",
+		    "marus25.cortex-debug",
+		    "marus25.cortex-debug-dp-stm32f1",
+		    "marus25.cortex-debug-dp-stm32f4",
+		    "jeandudey.cortex-debug-dp-stm32h7",
+		    "marus25.cortex-debug-dp-stm32l4",
+		    "ms-vscode.cpptools-extension-pack",
+	    ],
+    },
   },
-//"customizations": {
-//  // Configure properties specific to VS Code.
-//	"vscode": {
-// 	"extensions": [
-// 	]
-      // Add the IDs of extensions you want installed when the container is created.
- //   },
-      // Set *default* container specific settings.json values on container create.
- // "settings": { 
- //   "terminal.integrated.shell.linux": "/bin/bash",
-//  "python.pythonPath": "/usr/local/bin/python"
-//	  }
-// },
 
-// The workspace should later become /workspace, but we need to copy the .vscode folder
-// in there to get the launch.json and tasks.json visible
+  // For the .vscode and .devcontainer to be visible to the VSCode system
+  // and for us, mount in the default users's home directory
+  
   "workspaceMount": "source=${localWorkspaceFolder},target=/home/adaptabuild,type=bind,consistency=cached",
   "workspaceFolder": "/home/adaptabuild",
-//  "workspaceFolder": "/workspace",
+
+  // For best performance under Windows, and to isolate our working data from
+  // a container crash, use a volume to hold persistent data under the default
+  // user's ~/projects directory
+  //
+  // For improved security, we mount your host user's .ssh folder in the
+  // container under the default user's .ssh directory
 
   "mounts": [
-//      "source=${localWorkspaceFolder},target=/host-workspace,type=bind,consistency=cached",
     "source=adaptabuild-volume,target=/home/adaptabuild/projects,type=volume,consistency=cached",
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/adaptabuild/.ssh,type=bind,consistency=cached",
-],
-
-
-//"remoteEnv": { "PROJECT_FOLDER": "${localWorkspaceFolder}" }
-
-//  "initializeCommand": "sudo mknod -f /dev/tty-microbit c 255 0",
-//  "postAttachCommand": "/host-workspace/.devcontainer/postAttachCommand.sh"
-//  "postAttachCommand": "chmod +x /workspaces/rust-embedded/.devcontainer/postAttachCommand.sh && /workspaces/rust-embedded/.devcontainer/postAttachCommand.sh"
+  ],
 }

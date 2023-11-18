@@ -5,20 +5,18 @@
   "version": "0.2.0",
 
   "configurations": [
-
-      {
-          "name": "Cortex Debug in devcontainer .vscode Foo",
-          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
-//          "cwd": "./"
-          "executable": "adaptabuild-example-foo",
-          "request": "launch",
-          "type": "cortex-debug",
-          "runToEntryPoint": "main",
-          "servertype": "stutil",
-          "cortex-debug.armToolchainPath": "/usr/bin",
-//          "gdbPath": "/usr/bin/gdb-multiarch",
-          "showDevDebugOutput": "raw",
-      }
-  ]
+    {
+      "name": "Debug adaptabuild-example",
+      "cwd": "${workspaceFolder}/projects/adaptabuild-example",
+      "executable": "build/foo/STM32F051R8/adaptabuild-example",
+      "request": "launch",
+      "type": "cortex-debug",
+      "runToEntryPoint": "main",
+      "servertype": "external",
+      "gdbTarget": "host.gdb.gateway:4242",
+      "gdbPath": "/usr/bin/gdb-multiarch",
+//    "showDevDebugOutput": "raw",
+    },
+  ],
 }
 

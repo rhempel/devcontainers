@@ -6,9 +6,9 @@
 
   "configurations": [
     {
-      "name": "Debug adaptabuild-example",
+      "name": "Debug foo on STM32F0",
       "cwd": "${workspaceFolder}/projects/adaptabuild-example",
-      "executable": "build/foo/STM32F051R8/adaptabuild-example",
+      "executable": "build/foo/STM32F051R8/product/foo/foo",
       "request": "launch",
       "type": "cortex-debug",
       "runToEntryPoint": "main",

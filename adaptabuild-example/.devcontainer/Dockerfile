@@ -60,6 +60,7 @@ RUN apt install --no-install-recommends -y \
                    graphviz=2.42.2-6 \
                    default-jre=2:1.11-72build2 \
                    vim=2:8.2.3995-1ubuntu2.13 \
+                   bash-completion=1:2.11-5ubuntu1 \
                    wget=1.21.2-2ubuntu1 && \
     ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb && \
     wget -P /opt -x -nH --cut-dirs=1  https://github.com/plantuml/plantuml/releases/download/v1.2023.11/plantuml-1.2023.11.jar

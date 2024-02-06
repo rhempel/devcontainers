@@ -63,8 +63,8 @@ RUN apt install --no-install-recommends -y \
                    bash-completion=1:2.11-5ubuntu1 \
                    wget=1.21.2-2ubuntu1 && \
     ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb && \
-    wget -P /opt -x -nH --cut-dirs=1  https://github.com/plantuml/plantuml/releases/download/v1.2023.11/plantuml-1.2023.11.jar
-
+    wget -P /opt -x -nH --cut-dirs=1 https://github.com/plantuml/plantuml/releases/download/v1.2024.0/plantuml-1.2024.0.jar
+    
 COPY requirements.txt /tmp/requirements.txt
 
 RUN pip3 install -r /tmp/requirements.txt

@@ -45,26 +45,25 @@ RUN apt install --no-install-recommends -y \
 #       to get a list of up to date candidates.
 
 RUN apt install --no-install-recommends -y \
-                   git=1:2.34.1-1ubuntu1.9 \
-                   ssh=1:8.9p1-3ubuntu0.4 \
-                   python3=3.10.6-1~22.04 \
-                   build-essential=12.9ubuntu3 \
-                   gcc-arm-none-eabi=15:10.3-2021.07-4 \
-                   gdb-multiarch=12.1-0ubuntu1~22.04 \
-                   binutils-multiarch=2.38-4ubuntu2.3 \
-                   python3-clang=1:14.0-55~exp2 \
-                   python3-pip=22.0.2+dfsg-1ubuntu0.4 \
-                   python3-sphinx=4.3.2-1 \
-                   lcov=1.15-1 \
-                   cpputest=4.0-2 \
-                   graphviz=2.42.2-6 \
-                   default-jre=2:1.11-72build2 \
-                   vim=2:8.2.3995-1ubuntu2.13 \
-                   bash-completion=1:2.11-5ubuntu1 \
-                   wget=1.21.2-2ubuntu1 && \
-    ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb && \
-    wget -P /opt -x -nH --cut-dirs=1 https://github.com/plantuml/plantuml/releases/download/v1.2024.0/plantuml-1.2024.0.jar
-    
+                  git=1:2.34.1-1ubuntu1.9 \
+                  ssh=1:8.9p1-3ubuntu0.6 \
+                  python3=3.10.6-1~22.04 \
+                  build-essential=12.9ubuntu3 \
+                  gcc-arm-none-eabi=15:10.3-2021.07-4 \
+                  gdb-multiarch=12.1-0ubuntu1~22.04 \
+                  binutils-multiarch=2.38-4ubuntu2.6 \
+                  python3-clang=1:14.0-55~exp2 \
+                  python3-pip=22.0.2+dfsg-1ubuntu0.4 \
+                  python3-sphinx=4.3.2-1 \
+                  lcov=1.15-1 \
+                  cpputest=4.0-2 \
+                  graphviz=2.42.2-6 \
+                  vim=2:8.2.3995-1ubuntu2.15 \
+                  bash-completion=1:2.11-5ubuntu1 \
+                  wget=1.21.2-2ubuntu1 && \
+     ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb && \
+     wget -P /opt -x -nH --cut-dirs=1 https://github.com/plantuml/plantuml/releases/download/v1.2024.3/plantuml-1.2024.3.jar
+
 COPY requirements.txt /tmp/requirements.txt
 
 RUN pip3 install -r /tmp/requirements.txt

@@ -20,8 +20,8 @@ RUN apt update && \
 
 # Add a layer with the correct locale and timezone
 
-ENV LANG en_US.UTF-8
-ENV TZ Etc/EST
+ENV LANG="en_US.UTF-8"
+ENV TZ="America/Toronto"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -48,7 +48,7 @@ RUN apt install --no-install-recommends -y \
                    git=1:2.34.1-1ubuntu1.9 \
                    ssh=1:8.9p1-3ubuntu0.6 \
                    make=4.3-4.1build1 \
-                   vim=2:8.2.3995-1ubuntu2.15 \
+                   vim=2:8.2.3995-1ubuntu2.16 \
                    bash-completion=1:2.11-5ubuntu1 \
                    wget=1.21.2-2ubuntu1
  

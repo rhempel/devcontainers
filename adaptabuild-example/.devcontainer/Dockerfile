@@ -51,17 +51,19 @@ RUN apt install --no-install-recommends -y \
                   build-essential=12.9ubuntu3 \
                   gcc-arm-none-eabi=15:10.3-2021.07-4 \
                   gdb-multiarch=12.1-0ubuntu1~22.04 \
-                  binutils-multiarch=2.38-4ubuntu2.6 \
+                  binutils-multiarch-dev=2.38-4ubuntu2.6 \
                   python3-clang=1:14.0-55~exp2 \
                   python3-pip=22.0.2+dfsg-1ubuntu0.4 \
                   python3-sphinx=4.3.2-1 \
                   lcov=1.15-1 \
                   cpputest=4.0-2 \
                   graphviz=2.42.2-6 \
-                  vim=2:8.2.3995-1ubuntu2.15 \
+                  vim=2:8.2.3995-1ubuntu2.16 \
                   bash-completion=1:2.11-5ubuntu1 \
                   wget=1.21.2-2ubuntu1 && \
      ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb && \
+     ln -s /usr/bin/nm /usr/bin/nm-multiarch && \
+     ln -s /usr/bin/objdump /usr/bin/objdump-multiarch && \
      wget -P /opt -x -nH --cut-dirs=1 https://github.com/plantuml/plantuml/releases/download/v1.2024.3/plantuml-1.2024.3.jar
 
 COPY requirements.txt /tmp/requirements.txt

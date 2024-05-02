@@ -1,3 +1,8 @@
 {
-    "cortex-debug.variableUseNaturalFormat": false
+    "cortex-debug.variableUseNaturalFormat": false,
+    "files.associations": {
+        "system_error": "c",
+        "csloopdevice.pb.h": "c",
+        "algorithm": "c"
+    }
 }

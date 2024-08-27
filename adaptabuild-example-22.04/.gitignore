@@ -10,6 +10,7 @@
 # Ignore the session generated files
 .bash_history
 .viminfo
+.cortex-debug
 
 # Ignore Python history files
 **/.python_history

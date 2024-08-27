@@ -16,4 +16,6 @@
       ]
     },
   ],
+  "task.autoDetect": "off",
+  "task.allowAutomaticTasks": "off",
 }

@@ -1,0 +1,94 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+
+    "presentation": {
+        "focus": false,
+        "group": "adaptabuild",
+        "reveal": "silent",
+        "revealProblems": "onProblem",
+        "clear": true,
+        "showReuseMessage": false,
+        "close": false,
+    },
+
+    "tasks": [
+      {
+        "label": "Build adaptabuild docs",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "sphinx-build -M html adaptabuild/doc/sphinx/source artifacts/doc/adaptabuild"
+      },
+      {
+        "label": "Build STM32G031xx foo",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "make -f adaptabuild.mak MCU=STM32G031xx PRODUCT=foo"
+      },
+      {
+        "label": "Build STM32F051R8 foo",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "make -f adaptabuild.mak MCU=STM32F051R8 PRODUCT=foo"
+      },
+      {
+        "label": "Build STM32H7A3ZI foo",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "make -f adaptabuild.mak MCU=STM32H7A3ZI PRODUCT=foo"
+      },
+      {
+        "label": "Build STM32L452RE foo",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "make -f adaptabuild.mak MCU=STM32L452RE PRODUCT=foo"
+      },
+      {
+        "label": "Build pico2040 foo",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "make -f adaptabuild.mak MCU=pico2040 PRODUCT=foo"
+      },
+      {
+        "label": "Build nRF52832 foo",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "make -f adaptabuild.mak MCU=nRF52832 PRODUCT=foo"
+      },
+      {
+        "label": "Build All",
+        "dependsOn": [
+          "Build STM32G031xx foo",
+          "Build STM32F051R8 foo",
+          "Build STM32H7A3ZI foo",
+          "Build STM32L452RE foo",
+          "Build pico2040 foo",
+          "Build nRF52832 foo"
+        ],
+        "problemMatcher": []
+      },
+      {
+        "label": "Clean All",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "rm -r build/* "
+      }
+    ]
+}

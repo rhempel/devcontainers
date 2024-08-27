@@ -1,0 +1,98 @@
+{
+  "name" : "adaptabuild",
+
+  // Build a VSCode devcontainer based on the ubuntu-embedded:22.04 image.
+  //
+  // The image comes with a default "ubuntu" user, and we will replace it
+  // with the local user name.
+  //
+  // The "args" section below OVERRIDES the variables in Dockerfile, so
+  // do not change the Dockerfile.
+  //
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      // These variables OVERRIDE the settings in Dockerfile!!!
+      //
+      "USER_NAME": "${localEnv:USER}${localEnv:USERNAME}",
+      "USER_LANG": "en_US.UTF-8",
+      "USER_TZ": "Etc/EST",
+    }
+  },
+
+  // This line is the key to accessing any network sockets on the host
+  // machine when running a devcontiner.
+  //
+  // See .vscode/launch.json for examples of how to connect to a socket
+  // on the host maching.
+  //
+  "runArgs": [
+    "--add-host=host.gdb.gateway:host-gateway",
+  ],
+
+  // Add VSCode extensions to the container - note that you may need
+  // to temporarily disable your network security if your managed
+  // PC does not allow downloading from Microsoft.
+  //
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "mcu-debug.debug-tracker-vscode",
+        "mcu-debug.memory-view",
+        "mcu-debug.rtos-views",
+        "mcu-debug.peripheral-viewer",
+        "ms-vscode.live-server",
+        "marus25.cortex-debug",
+        "marus25.cortex-debug-dp-stm32f1",
+        "marus25.cortex-debug-dp-stm32f4",
+        "jeandudey.cortex-debug-dp-stm32h7",
+        "marus25.cortex-debug-dp-stm32l4",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.makefile-tools",
+        "EthanSK.restore-terminals",
+        "yzhang.markdown-all-in-one",
+        "eclipse-cdt.peripheral-inspector"
+      ],
+    },
+  },
+
+  // For the .vscode and .devcontainer to be visible to the VSCode system
+  // and for us, mount the local workspace (the folder with .devcontainer)
+  // in the default users's home directory
+  //
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/${localEnv:USER}${localEnv:USERNAME},type=bind,consistency=cached",
+  "workspaceFolder": "/home/${localEnv:USER}${localEnv:USERNAME}",
+
+  // For best performance under Windows, and to isolate our working data from
+  // a container crash, use a volume to hold persistent data under the default
+  // user's ~/projects directory
+  //
+  // NOTE: You can access this data directly from Windows 10 at this URL:
+  //
+  // \\wsl.localhost\docker-desktop-data\data\docker\volumes
+  //
+  // For Windows 11 it shows up at a slightly dufferent URL
+  //
+  // \\wsl.localhost\docker-desktop\mnt\docker-desktop-disk\data\docker\volumes
+  //
+  // For improved security, we mount your host user .ssh folder in the
+  // container user home - this avoids having to copy keys all
+  // over the place.
+  //
+  // We also mount your host user .gitconfig in the container user home
+  //
+  "mounts": [
+    "source=adaptabuild-volume,target=/home/${localEnv:USER}${localEnv:USERNAME}/projects,type=volume,consistency=cached",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/${localEnv:USER}${localEnv:USERNAME}/.ssh,type=bind,consistency=cached",
+  ],
+
+  // Change the ownership for the volume mount point from root to the default user
+  //
+  "postCreateCommand":
+    "sudo chown ${localEnv:USER}${localEnv:USERNAME} /home/${localEnv:USER}${localEnv:USERNAME}/projects",
+
+  "postStartCommand":
+    ""
+}

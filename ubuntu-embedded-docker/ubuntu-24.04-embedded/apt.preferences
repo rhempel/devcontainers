@@ -1,0 +1,79 @@
+Package: git
+Pin: version 1:2.43.0*
+Pin-Priority: 1000
+
+Package: ssh
+Pin: version 1:9.6*
+Pin-Priority: 1000
+
+Package: python3
+Pin: version 3.12.3*
+Pin-Priority: 1000
+
+Package: build-essential
+Pin: version 12.10*
+Pin-Priority: 1000
+
+Package: gcc-arm-none-eabi
+Pin: version 15:13.2*
+Pin-Priority: 1000
+
+Package: picolibc-arm-none-eabi
+Pin: version 1.8.6*
+Pin-Priority: 1000
+
+Package: gdb-multiarch
+Pin: version 15.0.50*
+Pin-Priority: 1000
+
+Package: binutils-multiarch-dev
+Pin: version 2.42*
+Pin-Priority: 1000
+
+Package: python3-clang
+Pin: version 1:18.0*
+Pin-Priority: 1000
+
+Package: python3-pip
+Pin: version 24.0*
+Pin-Priority: 1000
+
+Package: python3-grpcio
+Pin: version 1.51.1*
+Pin-Priority: 1000
+
+Package: python3-protobuf
+Pin: version 3.21.12*
+Pin-Priority: 1000
+
+Package: python3-sphinx
+Pin: version 7.2.6*
+Pin-Priority: 1000
+
+Package: lcov
+Pin: version 2.0*
+Pin-Priority: 1000
+
+Package: cpputest
+Pin: version 4.0*
+Pin-Priority: 1000
+
+Package: graphviz
+Pin: version 2.42.2*
+Pin-Priority: 1000
+
+Package: default-jre
+Pin: version 2:1.21*
+Pin-Priority: 1000
+
+Package: vim
+Pin: version 2:9.1*
+Pin-Priority: 1000
+
+Package: bash-completion
+Pin: version 1:2.11*
+Pin-Priority: 1000
+
+Package: wget
+Pin: version 1.21.4*
+Pin-Priority: 1000

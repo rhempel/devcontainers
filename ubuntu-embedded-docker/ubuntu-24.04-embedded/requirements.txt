@@ -1,0 +1,6 @@
+junit2html==31.0.2
+sphinx_rtd_theme==2.0.0
+sphinxcontrib-plantuml==0.30
+sphinx-argparse==0.5.2
+hawkmoth==0.18.0
+pyserial==3.5

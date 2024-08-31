@@ -207,9 +207,9 @@ will slow down any subsequent container builds until the cache is refilled.
 docker buildx prune -f 
 ```
 
-[buildx] : https://docs.docker.com/reference/cli/docker/buildx/build/
-[tag] : https://docs.docker.com/reference/cli/docker/image/tag/
-[image-save] : https://docs.docker.com/reference/cli/docker/image/save/
-[apt-pinning] :  https://help.ubuntu.com/community/PinningHowto
-[how-containers-work] : https://jvns.ca/blog/2020/04/27/new-zine-how-containers-work/
-[container-names] : https://github.com/moby/moby/blob/master/pkg/namesgenerator/names-generator.go
+[buildx]: https://docs.docker.com/reference/cli/docker/buildx/build/
+[tag]: https://docs.docker.com/reference/cli/docker/image/tag/
+[image-save]: https://docs.docker.com/reference/cli/docker/image/save/
+[apt-pinning]:  https://help.ubuntu.com/community/PinningHowto
+[how-containers-work]: https://jvns.ca/blog/2020/04/27/new-zine-how-containers-work/
+[container-names]: https://github.com/moby/moby/blob/master/pkg/namesgenerator/names-generator.go

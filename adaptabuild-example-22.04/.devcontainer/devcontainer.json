@@ -1,5 +1,5 @@
 {
-  "name" : "adaptabuild",
+  "name" : "adaptabuild-example",
 
   // Build a VSCode devcontainer based on the ubuntu-embedded:22.04 image.
   //
@@ -73,7 +73,7 @@
   //
   // \\wsl.localhost\docker-desktop-data\data\docker\volumes
   //
-  // For Windows 11 it shows up at a slightly dufferent URL
+  // For Windows 11 it shows up at a slightly different URL
   //
   // \\wsl.localhost\docker-desktop\mnt\docker-desktop-disk\data\docker\volumes
   //
@@ -86,13 +86,23 @@
   "mounts": [
     "source=adaptabuild-volume,target=/home/${localEnv:USER}${localEnv:USERNAME}/projects,type=volume,consistency=cached",
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/${localEnv:USER}${localEnv:USERNAME}/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/${localEnv:USER}${localEnv:USERNAME}/.gitconfig.host,type=bind,consistency=cached",
   ],
 
-  // Change the ownership for the volume mount point from root to the default user
+  // Run scripts as needed ...
   //
   "postCreateCommand":
-    "sudo chown ${localEnv:USER}${localEnv:USERNAME} /home/${localEnv:USER}${localEnv:USERNAME}/projects",
+    "bash ./.devcontainer/commands/postCreateCommand.sh ${localEnv:USER}${localEnv:USERNAME}",
 
   "postStartCommand":
-    ""
+    "bash ./.devcontainer/commands/postStartCommand.sh ${localEnv:USER}${localEnv:USERNAME}",
+
+  "postAttachCommand":
+    "bash ./.devcontainer/commands/postAttachCommand.sh ${localEnv:USER}${localEnv:USERNAME}",
+
+  // Wait for the postStartCommand to connecting - this can take a few minutes
+  // the first time the adaptabuild-volume is created as we need to recursively
+  // fetch all the submodules for adaptabuild-example.
+
+  "waitFor": "postStartCommand",
 }

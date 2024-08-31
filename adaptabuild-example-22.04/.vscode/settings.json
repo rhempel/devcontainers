@@ -6,11 +6,11 @@
     {
       "splitTerminals": [
         {
-          "name": "foo",
+          "name": "adaptabuild-example",
           "commands": ["cd projects/adaptabuild-example",]
         },
         {
-          "name": "bar",
+          "name": "projects",
           "commands": ["cd projects",]
         },
       ]

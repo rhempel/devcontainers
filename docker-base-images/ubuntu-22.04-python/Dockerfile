@@ -56,13 +56,9 @@ RUN apt install --no-install-recommends -y \
         bash-completion \
         wget
 
-        RUN ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb \
-        && ln -s /usr/bin/nm /usr/bin/nm-multiarch \
-        && ln -s /usr/bin/objdump /usr/bin/objdump-multiarch
-       
-       RUN wget -P /opt -x -nH --cut-dirs=1 \
-             https://github.com/plantuml/plantuml/releases/download/v1.2024.6/plantuml-1.2024.6.jar \
-        && ln -s /opt/plantuml/releases/download/v1.2024.6/plantuml-1.2024.6.jar /opt/plantuml/plantuml.jar
+RUN wget -P /opt -x -nH --cut-dirs=1 \
+    https://github.com/plantuml/plantuml/releases/download/v1.2024.6/plantuml-1.2024.6.jar \
+ && ln -s /opt/plantuml/releases/download/v1.2024.6/plantuml-1.2024.6.jar /opt/plantuml/plantuml.jar
        
 # Now install all the additional Python packages
 #

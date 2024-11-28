@@ -1,0 +1,39 @@
+Package: git
+Pin: version 1:2.43*
+Pin-Priority: 1000
+
+Package: ssh
+Pin: version 1:9.6*
+Pin-Priority: 1000
+
+Package: python3
+Pin: version 3.12.3*
+Pin-Priority: 1000
+
+Package: python3-pip
+Pin: version 24.0*
+Pin-Priority: 1000
+
+Package: python3-sphinx
+Pin: version 7.2.6*
+Pin-Priority: 1000
+
+Package: graphviz
+Pin: version 2.42.2*
+Pin-Priority: 1000
+
+Package: default-jre
+Pin: version 2:1.21*
+Pin-Priority: 1000
+
+Package: vim
+Pin: version 2:9.1*
+Pin-Priority: 1000
+
+Package: bash-completion
+Pin: version 1:2.11*
+Pin-Priority: 1000
+
+Package: wget
+Pin: version 1.21.4*
+Pin-Priority: 1000

@@ -19,7 +19,7 @@ USER root
 # potential solutions:
 # [failed] https://stackoverflow.com/questions/48645936/docker-for-mac-hash-sum-mismatch 
 # [worked] https://stackoverflow.com/questions/67732260/how-to-fix-hash-sum-mismatch-in-docker-on-mac
-# 
+#
 RUN echo "Acquire::http::Pipeline-Depth 0;" > /etc/apt/apt.conf.d/99custom \
  && echo "Acquire::http::No-Cache true;"   >> /etc/apt/apt.conf.d/99custom \
  && echo "Acquire::BrokenProxy    true;"   >> /etc/apt/apt.conf.d/99custom
@@ -48,31 +48,18 @@ RUN apt install --no-install-recommends -y \
         ssh \
         python3 \
         make \
-        build-essential \
-        gcc-arm-none-eabi \
-        picolibc-arm-none-eabi \
-        gdb-multiarch \
-        binutils-multiarch-dev \
-        python3-clang \
         python3-pip \
-        python3-protobuf \
         python3-sphinx \
-        lcov \
-        cpputest \
         graphviz \
         default-jre \
         vim \
         bash-completion \
         wget
 
-RUN ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb \
- && ln -s /usr/bin/nm /usr/bin/nm-multiarch \
- && ln -s /usr/bin/objdump /usr/bin/objdump-multiarch
- 
 RUN wget -P /opt -x -nH --cut-dirs=1 \
-      https://github.com/plantuml/plantuml/releases/download/v1.2024.6/plantuml-1.2024.6.jar \
+    https://github.com/plantuml/plantuml/releases/download/v1.2024.6/plantuml-1.2024.6.jar \
  && ln -s /opt/plantuml/releases/download/v1.2024.6/plantuml-1.2024.6.jar /opt/plantuml/plantuml.jar
-
+       
 # Now install all the additional Python packages. On Ubuntu 24.04 and higher you will
 # get a warning about using pip on an externally managed Python installation. That's
 # great for keeping you from accidentally breaking your Pythion installation, but in this

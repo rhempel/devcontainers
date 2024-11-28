@@ -1,5 +1,5 @@
 Package: git
-Pin: version 1:2.43.0*
+Pin: version 1:2.43*
 Pin-Priority: 1000
 
 Package: ssh

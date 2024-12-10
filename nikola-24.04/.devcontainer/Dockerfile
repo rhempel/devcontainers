@@ -59,7 +59,8 @@ RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 RUN apt install --no-install-recommends -y \
        jpegoptim \
        optipng \
-       tidy
+       tidy \
+       curl
 
 # Now install all the additional Python packages. On Ubuntu 24.04 and higher you will
 # get a warning about using pip on an externally managed Python installation. That's

@@ -38,7 +38,7 @@
       "servertype": "external",
       "gdbTarget": "host.gdb.gateway:2000",
       "gdbPath": "/usr/bin/gdb-multiarch",
-      //    "showDevDebugOutput": "raw",
+//      "showDevDebugOutput": "raw",
       "overrideLaunchCommands": [
         "interrupt",
         "set $pc=&g_pfnVectors",
@@ -107,8 +107,7 @@
       "servertype": "external",
       "gdbTarget": "host.gdb.gateway:2331", // NOTE: This is a J-Link, not OpenOCD!!
       "gdbPath": "/usr/bin/gdb-multiarch",
-      "showDevDebugOutput": "raw",
-
+//      "showDevDebugOutput": "raw",
       "overrideResetCommands": [
         "interrupt",
         "set $pc=&Reset_Handler",
@@ -118,6 +117,27 @@
         "load",
       ],
     },
+    {
+      "name": "Debug foo on MAX32690FTHR",
+      "cwd": "${userHome}/projects/adaptabuild-example",
+      "executable": "build/foo/max32690/foo/foo.elf",
+      "request": "launch",
+      "type": "cortex-debug",
+      "runToEntryPoint": "main",
+      "servertype": "external",
+      "gdbTarget": "host.gdb.gateway:3333",
+      "gdbPath": "/usr/bin/gdb-multiarch",
+//      "showDevDebugOutput": "raw",
+      "overrideResetCommands": [
+        "interrupt",
+        "set $pc=&Reset_Handler",
+      ],
+      "overrideRestartCommands": [
+        "interrupt",
+        "load",
+      ],
+    },
+
     {
       // Uses https://github.com/majbthrd/pico-debug/releases !!! :-)
       // https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html#what-is-on-your-pico

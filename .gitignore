@@ -9,3 +9,13 @@
 **/.lesshst
 **/.local/
 **/.viminfo
+**/.devcontainer/.*Marker
+
+# Ignore any .gitconfig
+**/.gitconfig*
+
+# Ignore secrets
+**/secrets/*
+
+
+

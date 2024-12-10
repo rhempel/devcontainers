@@ -71,6 +71,14 @@
         "command": "make -f adaptabuild.mak MCU=nRF52832 PRODUCT=foo"
       },
       {
+        "label": "Build max32690 foo",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "make -f adaptabuild.mak MCU=max32690 PRODUCT=foo"
+      },
+      {
         "label": "Build All",
         "dependsOn": [
           "Build STM32G031xx foo",
@@ -79,6 +87,7 @@
           "Build STM32L452RE foo",
           "Build pico2040 foo",
           "Build nRF52832 foo"
+          "Build max32690 foo"
         ],
         "problemMatcher": []
       },

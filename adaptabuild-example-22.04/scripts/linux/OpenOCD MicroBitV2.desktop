@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=OpenOCD MicroBitV2
+GenericName=OpenOCD MicroBitV2
+Comment=Open-source electronics prototyping platform
+Exec="/opt/xpack-openocd-0.12.0-4/bin/openocd -f interface/cmsis-dap.cfg -f target/nrf51.cfg -c \\"bindto 0.0.0.0\\""
+Icon=applications-utilities
+Terminal=true
+Categories=Development
+Keywords=embedded electronics;electronics;microcontroller;debug;

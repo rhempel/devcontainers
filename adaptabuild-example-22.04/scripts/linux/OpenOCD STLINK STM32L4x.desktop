@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=OpenOCD STM32L4x STLINK
+GenericName=OpenOCD STM32Lx4 STLINK
+Comment=Open-source electronics prototyping platform
+Exec="/opt/xpack-openocd-0.12.0-4/bin/openocd -f interface/stlink.cfg -f target/stm32l4x.cfg -c \\"bindto 0.0.0.0\\""
+Icon=applications-utilities
+Terminal=true
+Categories=Development
+Keywords=embedded electronics;electronics;microcontroller;debug;

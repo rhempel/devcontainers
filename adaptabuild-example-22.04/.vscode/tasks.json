@@ -98,6 +98,14 @@
         },
         "type": "shell",
         "command": "rm -r build/* "
+      },
+      {
+        "label": "Execute Off Target Unit Tests",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "make -f adaptabuild.mak MCU=host PRODUCT=foo unittest"
       }
     ]
 }

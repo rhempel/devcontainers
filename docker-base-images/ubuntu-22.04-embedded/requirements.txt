@@ -1,5 +1,6 @@
 grpcio-tools==1.62.1
 hawkmoth==0.15.0
+junit2html==31.0.2
 protobuf==4.25.3
 pyserial==3.5
 sphinx_rtd_theme==1.2.2

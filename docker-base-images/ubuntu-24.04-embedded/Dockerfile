@@ -76,7 +76,7 @@ RUN wget -P /opt -x -nH --cut-dirs=1 \
 # Now install all the additional Python packages. On Ubuntu 24.04 and higher you will
 # get a warning about using pip on an externally managed Python installation. That's
 # great for keeping you from accidentally breaking your Pythion installation, but in this
-# case we are amanging the entire system with a Docker base image that we control.
+# case we are manging the entire system with a Docker base image that we control.
 #
 # Use the --break-system-packages to suppress the warning and allow the install to continue.
 #

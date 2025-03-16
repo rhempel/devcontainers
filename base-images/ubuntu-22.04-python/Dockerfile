@@ -1,19 +1,19 @@
-FROM ubuntu:24.04
+FROM ubuntu:22.04
 
 USER root
 
 # The Ubuntu Docker images after 22.04 have a default "ubuntu" user
-# so we do NOT need to create one here - leave this commented out to
-# remind us that we have an assumption about this as the default user.
+# so we need to create one here to make sure that more up to date
+# .devcontainers don't break.
 #
-# ARG USER_NAME=ubuntu
-# ARG USER_UID=1000
-# ARG USER_GID=$USER_UID
+ARG USER_NAME=ubuntu
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
 
 # Create the user
 #
-# RUN groupadd --gid $USER_GID $USER_NAME \
-#  && useradd --uid $USER_UID --gid $USER_GID -d /home/$USER_NAME -m -s /usr/bin/bash $USER_NAME
+RUN groupadd --gid $USER_GID $USER_NAME \
+ && useradd --uid $USER_UID --gid $USER_GID -d /home/$USER_NAME -m -s /usr/bin/bash $USER_NAME
 
 # Add some tolerance to the apt system ...
 # potential solutions:
@@ -46,8 +46,8 @@ RUN apt install --no-install-recommends -y \
         locales \
         git \
         ssh \
-        python3 \
         make \
+        python3 \
         python3-pip \
         python3-sphinx \
         graphviz \
@@ -59,17 +59,12 @@ RUN apt install --no-install-recommends -y \
 RUN wget -P /opt -x -nH --cut-dirs=1 \
     https://github.com/plantuml/plantuml/releases/download/v1.2024.6/plantuml-1.2024.6.jar \
  && ln -s /opt/plantuml/releases/download/v1.2024.6/plantuml-1.2024.6.jar /opt/plantuml/plantuml.jar
-       
-# Now install all the additional Python packages. On Ubuntu 24.04 and higher you will
-# get a warning about using pip on an externally managed Python installation. That's
-# great for keeping you from accidentally breaking your Pythion installation, but in this
-# case we are manging the entire system with a Docker base image that we control.
-#
-# Use the --break-system-packages to suppress the warning and allow the install to continue.
+
+# Now install all the additional Python packages
 #
 COPY requirements.txt /tmp/requirements.txt
 
-RUN pip3 install --break-system-packages -r /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt
 
 # Clean up the apt cache and lists to save space in the image
 #

@@ -30,8 +30,10 @@ ARG USER_TZ=Etc/EST
 RUN touch -f /var/mail/ubuntu \
  && chown ubuntu /var/mail/ubuntu \
  && userdel -r ubuntu \
- && groupadd -o --gid $USER_GID $USER_NAME \
- && useradd --uid $USER_UID --gid $USER_GID -d /home/$USER_NAME -m -s /usr/bin/bash $USER_NAME
+ && useradd -d /home/$USER_NAME -m -s /usr/bin/bash $USER_NAME
+
+# && groupadd -o --gid $USER_GID $USER_NAME \
+# && useradd --uid $USER_UID --gid $USER_GID -d /home/$USER_NAME -m -s /usr/bin/bash $USER_NAME
 
 RUN apt update
 
@@ -41,6 +43,40 @@ RUN apt update
 RUN apt install --no-install-recommends -y sudo \
  && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
  && chmod 0440 /etc/sudoers.d/$USER_NAME
+
+# Here's what build123d needs ...
+
+RUN apt install --no-install-recommends -y python3-asttokens \
+                                           python3-contourpy \
+                                           python3-cycler \
+                                           python3-decorator \
+                                           python3-executing \
+                                           python3-ezdxf \
+                                           python3-ipykernel \
+                                           python3-ipython \
+                                           python3-jedi \
+                                           python3-jupyter-console \
+                                           python3-matplotlib \
+                                           python3-matplotlib-inline \
+                                           python3-parso \
+                                           python3-pexpect \
+                                           python3-ptyprocess \
+                                           python3-pyparsing \
+                                           python3-scipy \
+                                           python3-svgelements \
+                                           python3-svgwrite \
+                                           python3-traitlets \
+                                           python3-vtk9 \
+                                           python3-wcwidth
+
+# Now remove the packages that will conflict with build123d
+
+RUN apt remove -y python3-numpy \
+                  python3-kiwisolver
+
+# And install build123d
+
+RUN pip install --break-system-packages pandas-stubs build123d ocp_vscode
 
 # Add a layer with the correct locale and timezone
 #
@@ -55,25 +91,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 # NOTE: This is where we might need to separate the locale, character map, and encoding
 #
 RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-
-RUN apt install --no-install-recommends -y \
-       jpegoptim \
-       optipng \
-       tidy \
-       curl
-
-# Now install all the additional Python packages. On Ubuntu 24.04 and higher you will
-# get a warning about using pip on an externally managed Python installation. That's
-# great for keeping you from accidentally breaking your Pythion installation, but in this
-# case we are amanging the entire system with a Docker base image that we control.
-#
-# Use the --break-system-packages to suppress the warning and allow the install to continue.
-#
-RUN pip install --break-system-packages "Nikola[extras]"
-
-# Only needed until Nikola releases the version after 8.3.1
-#
-RUN pip install --break-system-packages --upgrade watchdog==4.0.0
 
 # Set the default user - omit if you want to keep the default
 # as root. (You don't)

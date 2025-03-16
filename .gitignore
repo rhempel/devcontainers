@@ -10,6 +10,11 @@
 **/.local/
 **/.viminfo
 **/.devcontainer/.*Marker
+**/.dotnet/
+**/.ipython/
+
+# Ignore any OCP Viewer files
+**.ocpvscode
 
 # Ignore any .gitconfig
 **/.gitconfig*

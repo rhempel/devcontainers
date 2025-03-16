@@ -1,5 +1,5 @@
 {
-  "name" : "nikola",
+  "name" : "build123d",
 
   // Build a VSCode devcontainer based on the ubuntu-embedded:22.04 image.
   //
@@ -24,6 +24,10 @@
     "--userns=keep-id", // Your home dirctory has your ID for permissions
   ],
 
+  // The build123d server uses port 3939
+  //
+  "forwardPorts": [3939],
+
   // Add VSCode extensions to the container - note that you may need
   // to temporarily disable your network security if your managed
   // PC does not allow downloading from Microsoft.
@@ -31,7 +35,11 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
       ],
+      "settings": {
+      }
     },
   },
 
@@ -46,13 +54,9 @@
   // a container crash, use a volume to hold persistent data under the default
   // user's ~/projects directory
   //
-  // NOTE: You can access this data directly from Windows 10 at this URL:
-  //
-  // \\wsl.localhost\docker-desktop-data\data\docker\volumes
-  //
-  // For Windows 11 it shows up at a slightly different URL
-  //
-  // \\wsl.localhost\docker-desktop\mnt\docker-desktop-disk\data\docker\volumes
+  // NOTE: You may have to read your container system's documentation
+  //       to find the volume files under your host operating system
+  //       filesystem.
   //
   // For improved security, we mount your host user .ssh folder in the
   // container user home - this avoids having to copy keys all
@@ -61,7 +65,7 @@
   // We also mount your host user .gitconfig in the container user home
   //
   "mounts": [
-    "source=nikola-volume,target=/home/${localEnv:USER}${localEnv:USERNAME}/projects,type=volume,consistency=cached",
+    "source=build123d-volume,target=/home/${localEnv:USER}${localEnv:USERNAME}/projects,type=volume,consistency=cached",
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/${localEnv:USER}${localEnv:USERNAME}/.ssh,type=bind,consistency=cached",
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/${localEnv:USER}${localEnv:USERNAME}/.gitconfig.host,type=bind,consistency=cached",
   ],

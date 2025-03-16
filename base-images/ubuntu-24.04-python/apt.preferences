@@ -10,6 +10,10 @@ Package: python3
 Pin: version 3.12.3*
 Pin-Priority: 1000
 
+Package: python3
+Pin: version 3.12.3*
+Pin-Priority: 1000
+
 Package: python3-pip
 Pin: version 24.0*
 Pin-Priority: 1000

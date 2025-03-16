@@ -38,14 +38,6 @@ Package: python3-pip
 Pin: version 24.0*
 Pin-Priority: 1000
 
-Package: python3-grpcio
-Pin: version 1.51.1*
-Pin-Priority: 1000
-
-Package: python3-protobuf
-Pin: version 3.21.12*
-Pin-Priority: 1000
-
 Package: python3-sphinx
 Pin: version 7.2.6*
 Pin-Priority: 1000

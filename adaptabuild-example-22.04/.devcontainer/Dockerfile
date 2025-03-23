@@ -1,4 +1,4 @@
-FROM ubuntu-embedded:22.04
+FROM ubuntu-22.04-embedded
 
 # Note: The GID is super critical to get right - on my Linux machine it does
 #       not seem to matter, but on Windows I believe it requires the GID to

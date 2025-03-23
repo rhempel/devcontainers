@@ -54,7 +54,7 @@ If you have ever wondered how containers get their default names, then
 
 ## Starting a Base Image Build
 
-Docker and Podmnan have almost identical command lines. This is by design as
+Docker and Podman have almost identical command lines. This is by design as
 Podman came after Docker, and rather than design yet another almost compatible
 command line, the Podman team wisely chose to simply duplicate the semantics
 of Docker. They even went so far as to be able to read the Dockerfile format.
@@ -82,6 +82,8 @@ The simplest way to kick off the build of a new image is:
 ```
 cd path/to/ubuntu-xx.yy-embedded
 
+# Choose podman or docker depending on your containerization tool
+#
 docker buildx build -f Dockerfile -t ubuntu-xx.yy-embedded .
 podman image  build -f Dockerfile -t ubuntu-xx.yy-embedded .
 
@@ -92,6 +94,8 @@ If you want to avoid changing to the directory where the `Dockerfile`
 lives, you can just do this:
 
 ```
+# Choose podman or docker depending on your containerization tool
+#
 docker buildx build -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded
 podman image  build -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded
 ```
@@ -116,6 +120,8 @@ If you need more control over the tag process, refer to the
 You rename/tag an image like this:
 
 ```
+# Choose podman or docker depending on your containerization tool
+#
 docker image tag ubuntu-22.04-embedded some-new-name:some-new-tag
 podman image tag ubuntu-22.04-embedded some-new-name:some-new-tag
 ```
@@ -143,6 +149,8 @@ plantuml/plantuml-server        jetty  cba36f940161 6 weeks ago    483MB
 So making that VSCode Image more friendly looks like this:
 
 ```
+# Choose podman or docker depending on your containerization tool
+#
 docker image tag 047565335b81 some-new-name:some-new-tag
 podman image tag 047565335b81 some-new-name:some-new-tag
 ```
@@ -331,6 +339,8 @@ speed up container construction - but sometimes the cache works against
 you. One way around this is to force a build without the cache:
 
 ```
+# Choose podman or docker depending on your containerization tool
+#
 docker buildx build --no-cache -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded-docker
 podman image  build --no-cache -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded-docker
 ```
@@ -340,6 +350,8 @@ Docker cache - this can actually free up quite a bit of disk space, but you
 will slow down any subsequent container builds until the cache is refilled.
 
 ```
+# Choose podman or docker depending on your containerization tool
+#
 docker buildx prune -f
 podman image  prune -f
 ```

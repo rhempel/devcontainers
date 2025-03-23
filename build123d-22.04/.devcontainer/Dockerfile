@@ -30,8 +30,11 @@ ARG USER_TZ=Etc/EST
 RUN touch -f /var/mail/ubuntu \
  && chown ubuntu /var/mail/ubuntu \
  && userdel -r ubuntu \
- && groupadd -o --gid $USER_GID $USER_NAME \
- && useradd --uid $USER_UID --gid $USER_GID -d /home/$USER_NAME -m -s /usr/bin/bash $USER_NAME
+ && useradd -d /home/$USER_NAME -m -s /usr/bin/bash $USER_NAME
+
+
+# && groupadd -o --gid $USER_GID $USER_NAME \
+# && useradd --uid $USER_UID --gid $USER_GID -d /home/$USER_NAME -m -s /usr/bin/bash $USER_NAME
 
 RUN apt update
 
@@ -56,16 +59,16 @@ ARG DEBIAN_FRONTEND=noninteractive
 #
 RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-RUN apt install --no-install-recommends -y \
-        jpegoptim \
-        optipng \
-        tidy
+#RUN apt install --no-install-recommends -y \
+#        jpegoptim \
+#        optipng \
+#        tidy
 
-RUN pip install "Nikola[extras]"
+#RUN pip install "Nikola[extras]"
 
 # Only needed until Nikola releases the version after 8.3.1
 #
-RUN pip install --upgrade watchdog==4.0.0
+#RUN pip install --upgrade watchdog==4.0.0
 
 # Set the default user - omit if you want to keep the default
 # as root. (You don't)

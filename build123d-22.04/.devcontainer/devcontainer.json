@@ -1,0 +1,92 @@
+{
+  "name" : "build123d",
+
+  // Build a VSCode devcontainer based on the ubuntu-22.04-embedded image.
+  //
+  // The image comes with a default "ubuntu" user, and we will replace it
+  // with the local user name.
+  //
+  // The "args" section below OVERRIDES the variables in Dockerfile, so
+  // do not change the Dockerfile.
+  //
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      // These variables OVERRIDE the settings in Dockerfile!!!
+      //
+      "USER_NAME": "${localEnv:USER}${localEnv:USERNAME}",
+      "USER_LANG": "en_US.UTF-8",
+      "USER_TZ": "Etc/EST",
+    }
+  },
+
+  "runArgs": [
+    "--userns=keep-id", // Your home dirctory has your ID for permissions
+  ],
+
+  // The build123d server uses port 3939
+  //
+  "forwardPorts": [3939],
+
+  // Add VSCode extensions to the container - note that you may need
+  // to temporarily disable your network security if your managed
+  // PC does not allow downloading from Microsoft.
+  //
+  "customizations": {
+    "vscode": {
+      "extensions": [
+//        "ms-python.vscode-pylance",
+//        "ms-python.python",
+//        "ms-python.debugpy",
+//        "bernhard-42.ocp-cad-viewer"
+      ],
+      "settings": {
+//          "extensions.verifySignature": false
+      }
+    },
+  },
+
+  // For the .vscode and .devcontainer to be visible to the VSCode system
+  // and for us, mount the local workspace (the folder with .devcontainer)
+  // in the default users's home directory
+  //
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/${localEnv:USER}${localEnv:USERNAME},type=bind,consistency=cached",
+  "workspaceFolder": "/home/${localEnv:USER}${localEnv:USERNAME}",
+
+  // For best performance under Windows, and to isolate our working data from
+  // a container crash, use a volume to hold persistent data under the default
+  // user's ~/projects directory
+  //
+  // NOTE: You may have to read your container system's documentation
+  //       to find the volume files under your host operating system
+  //       filesystem.
+  //
+  // For improved security, we mount your host user .ssh folder in the
+  // container user home - this avoids having to copy keys all
+  // over the place.
+  //
+  // We also mount your host user .gitconfig in the container user home
+  //
+  "mounts": [
+    "source=build123d-volume,target=/home/${localEnv:USER}${localEnv:USERNAME}/projects,type=volume,consistency=cached",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/${localEnv:USER}${localEnv:USERNAME}/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/${localEnv:USER}${localEnv:USERNAME}/.gitconfig.host,type=bind,consistency=cached",
+  ],
+
+  // Run scripts as needed ...
+  //
+  "postCreateCommand":
+    "bash ./.devcontainer/commands/postCreateCommand.sh ${localEnv:USER}${localEnv:USERNAME}",
+
+  "postStartCommand":
+    "bash ./.devcontainer/commands/postStartCommand.sh ${localEnv:USER}${localEnv:USERNAME}",
+
+  "postAttachCommand":
+    "bash ./.devcontainer/commands/postAttachCommand.sh ${localEnv:USER}${localEnv:USERNAME}",
+
+  // Wait for the postStartCommand to connecting - this can take a few minutes
+  // the first time the adaptabuild-volume is created as we need to recursively
+  // fetch all the submodules for adaptabuild-example.
+
+  "waitFor": "postStartCommand",
+}

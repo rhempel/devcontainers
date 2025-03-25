@@ -28,7 +28,7 @@
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild.mak MCU=STM32G031xx PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=STM32G031xx PRODUCT=foo"
       },
       {
         "label": "Build STM32F051R8 foo",
@@ -36,7 +36,7 @@
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild.mak MCU=STM32F051R8 PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=STM32F051R8 PRODUCT=foo"
       },
       {
         "label": "Build STM32H7A3ZI foo",
@@ -44,7 +44,7 @@
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild.mak MCU=STM32H7A3ZI PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=STM32H7A3ZI PRODUCT=foo"
       },
       {
         "label": "Build STM32L452RE foo",
@@ -52,23 +52,23 @@
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild.mak MCU=STM32L452RE PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=STM32L452RE PRODUCT=foo"
       },
-      {
-        "label": "Build pico2040 foo",
-        "options": {
-          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
-        },
-        "type": "shell",
-        "command": "make -f adaptabuild.mak MCU=pico2040 PRODUCT=foo"
-      },
+//      {
+//        "label": "Build pico2040 foo",
+//        "options": {
+//          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+//        },
+//        "type": "shell",
+//        "command": "make -f adaptabuild_config.mak MCU=pico2040 PRODUCT=foo"
+//      },
       {
         "label": "Build nRF52832 foo",
         "options": {
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild.mak MCU=nRF52832 PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=nRF52832 PRODUCT=foo"
       },
       {
         "label": "Build max32690 foo",
@@ -76,7 +76,7 @@
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild.mak MCU=max32690 PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=max32690 PRODUCT=foo"
       },
       {
         "label": "Build All",
@@ -105,7 +105,7 @@
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild.mak MCU=host PRODUCT=foo unittest"
+        "command": "make -f adaptabuild_config.mak MCU=host PRODUCT=foo unittest"
       }
     ]
 }

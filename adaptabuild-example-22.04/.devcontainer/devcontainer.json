@@ -86,6 +86,9 @@
   "mounts": [
     "source=adaptabuild-volume,target=/home/${localEnv:USER}${localEnv:USERNAME}/projects,type=volume,consistency=cached",
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/${localEnv:USER}${localEnv:USERNAME}/.ssh,type=bind,consistency=cached",
+  
+  // All users typically have a .ssh folder in their HOME, but let's not mount .gitconfig and
+  // instead rely on a local override system using include
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/${localEnv:USER}${localEnv:USERNAME}/.gitconfig.host,type=bind,consistency=cached",
   ],
 

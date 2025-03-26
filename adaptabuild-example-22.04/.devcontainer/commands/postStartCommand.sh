@@ -1,7 +1,10 @@
-this_user=$1
-
 # Check for and clone the adaptabuild-example if it doesn't exist
 #
+echo "==============================================================="
+echo user is $1
+echo HOME is $HOME
+sleep 5
+
 cd ~/projects
 
 if [ ! -d adaptabuild-example ]; then

@@ -1,5 +1,3 @@
-this_user=$1
-
 # Assume that worked and fetch (don't pull!) and updates
 #
 cd ~/projects

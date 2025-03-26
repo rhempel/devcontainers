@@ -1,7 +1,7 @@
 {
   "name" : "adaptabuild-example",
 
-  // Build a VSCode devcontainer based on the ubuntu-embedded:22.04 image.
+  // Build a VSCode devcontainer based on the ubuntu-22.04-embedded image.
   //
   // The image comes with a default "ubuntu" user, and we will replace it
   // with the local user name.
@@ -29,6 +29,11 @@
   "runArgs": [
     "--add-host=host.gdb.gateway:host-gateway",
   ],
+
+  // This is critical to ensure that your host-local username is used to set
+  // the username (and the HOME dicretory) in the container on a Windows host.
+  //
+  "remoteUser":  "${localEnv:USER}${localEnv:USERNAME}",
 
   // Add VSCode extensions to the container - note that you may need
   // to temporarily disable your network security if your managed
@@ -89,7 +94,7 @@
   
   // All users typically have a .ssh folder in their HOME, but let's not mount .gitconfig and
   // instead rely on a local override system using include
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/${localEnv:USER}${localEnv:USERNAME}/.gitconfig.host,type=bind,consistency=cached",
+  //  "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/${localEnv:USER}${localEnv:USERNAME}/.gitconfig.host,type=bind,consistency=cached",
   ],
 
   // Run scripts as needed ...

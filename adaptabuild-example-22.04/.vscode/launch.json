@@ -98,6 +98,29 @@
       ],
     },
     {
+      "name": "Debug foo on STM32G4",
+      "cwd": "${userHome}/projects/adaptabuild-example",
+      "executable": "build/foo/STM32G491xx/foo/foo.elf",
+      "request": "launch",
+      "type": "cortex-debug",
+      "runToEntryPoint": "main",
+      "servertype": "external",
+      "gdbTarget": "host.gdb.gateway:3333",
+      "gdbPath": "/usr/bin/gdb-multiarch",
+//    "showDevDebugOutput": "raw",
+//      "overrideLaunchCommands": [
+//        "interrupt",
+//        "set $pc=&g_pfnVectors",
+//      ],
+//      "overrideResetCommands": [
+//        "set $pc=&g_pfnVectors",
+//      ],
+//      "overrideRestartCommands": [
+//        "interrupt",
+//        "set $pc=&g_pfnVectors",
+//      ],
+    },
+    {
       "name": "Debug foo on max32690",
       "cwd": "${userHome}/projects/adaptabuild-example",
       "executable": "build/foo/max32690/foo/foo.elf",

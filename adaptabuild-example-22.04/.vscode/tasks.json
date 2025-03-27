@@ -31,6 +31,14 @@
         "command": "make -f adaptabuild_config.mak MCU=STM32G031xx PRODUCT=foo"
       },
       {
+        "label": "Build STM32G491xx foo",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "make -f adaptabuild_config.mak MCU=STM32G491xx PRODUCT=foo"
+      },
+      {
         "label": "Build STM32F051R8 foo",
         "options": {
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
@@ -82,6 +90,7 @@
         "label": "Build All",
         "dependsOn": [
           "Build STM32G031xx foo",
+          "Build STM32G491xx foo",
           "Build STM32F051R8 foo",
           "Build STM32H7A3ZI foo",
           "Build STM32L452RE foo",

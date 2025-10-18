@@ -57,12 +57,17 @@
   // container user home - this avoids having to copy keys all
   // over the place.
   //
-  // We also mount your host user .gitconfig in the container user home
+  // To reduce container startup time, we mount a container specific volume
+  // for the .vscode-server folder. This persists the VSCode exptensions and
+  // avoids the file copy on startup/rebuild. 
+  //
+  // https://stackoverflow.com/questions/58765127/permanently-install-vs-codes-server-in-container
   //
   "mounts": [
     "source=nikola-volume,target=/home/${localEnv:USER}${localEnv:USERNAME}/projects,type=volume,consistency=cached",
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/${localEnv:USER}${localEnv:USERNAME}/.ssh,type=bind,consistency=cached",
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/${localEnv:USER}${localEnv:USERNAME}/.gitconfig.host,type=bind,consistency=cached",
+    "source=nikola-22.04-vscode-server,target=/home/${localEnv:USER}${localEnv:USERNAME}/.vscode-server,type=volume,consistency=cached",
+  //"source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/${localEnv:USER}${localEnv:USERNAME}/.gitconfig.host,type=bind,consistency=cached",
   ],
 
   // Run scripts as needed ...

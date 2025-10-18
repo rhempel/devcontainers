@@ -39,6 +39,14 @@
         "command": "make -f adaptabuild_config.mak MCU=STM32G491xx PRODUCT=foo"
       },
       {
+        "label": "Build STM32G491xx blinky",
+        "options": {
+          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
+        },
+        "type": "shell",
+        "command": "make -f adaptabuild_config.mak MCU=STM32G491xx PRODUCT=blinky"
+      },
+      {
         "label": "Build STM32F051R8 foo",
         "options": {
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"

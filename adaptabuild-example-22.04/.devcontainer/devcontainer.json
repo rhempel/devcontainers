@@ -28,6 +28,7 @@
   //
   "runArgs": [
     "--add-host=host.gdb.gateway:host-gateway",
+    "--userns=keep-id", // Your home dirctory has your ID for permissions
   ],
 
   // This is critical to ensure that your host-local username is used to set
@@ -43,22 +44,16 @@
     "vscode": {
       "extensions": [
         "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.live-server",
+        "ms-vscode.makefile-tools",
         "mcu-debug.debug-tracker-vscode",
         "mcu-debug.memory-view",
-        "mcu-debug.rtos-views",
         "mcu-debug.peripheral-viewer",
-        "ms-vscode.live-server",
+        "mcu-debug.rtos-views",
         "marus25.cortex-debug",
-        "marus25.cortex-debug-dp-stm32f1",
-        "marus25.cortex-debug-dp-stm32f4",
-        "jeandudey.cortex-debug-dp-stm32h7",
-        "marus25.cortex-debug-dp-stm32l4",
-        "ms-vscode.cpptools-extension-pack",
-        "ms-azuretools.vscode-docker",
-        "ms-vscode.makefile-tools",
         "EthanSK.restore-terminals",
         "yzhang.markdown-all-in-one",
-        "eclipse-cdt.peripheral-inspector",
       ],
     },
   },
@@ -86,10 +81,15 @@
   // container user home - this avoids having to copy keys all
   // over the place.
   //
-  // We also mount your host user .gitconfig in the container user home
+  // To reduce container startup time, we mount a container specific volume
+  // for the .vscode-server folder. This persists the VSCode exptensions and
+  // avoids the file copy on startup/rebuild. 
+  //
+  // https://stackoverflow.com/questions/58765127/permanently-install-vs-codes-server-in-container
   //
   "mounts": [
     "source=adaptabuild-volume,target=/home/${localEnv:USER}${localEnv:USERNAME}/projects,type=volume,consistency=cached",
+    "source=adaptabuild-22.04-vscode-server,target=/home/${localEnv:USER}${localEnv:USERNAME}/.vscode-server,type=volume,consistency=cached",
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/${localEnv:USER}${localEnv:USERNAME}/.ssh,type=bind,consistency=cached",
   
   // All users typically have a .ssh folder in their HOME, but let's not mount .gitconfig and

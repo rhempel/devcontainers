@@ -108,17 +108,19 @@
       "gdbTarget": "host.gdb.gateway:3333",
       "gdbPath": "/usr/bin/gdb-multiarch",
 //    "showDevDebugOutput": "raw",
-//      "overrideLaunchCommands": [
-//        "interrupt",
-//        "set $pc=&g_pfnVectors",
-//      ],
-//      "overrideResetCommands": [
-//        "set $pc=&g_pfnVectors",
-//      ],
-//      "overrideRestartCommands": [
-//        "interrupt",
-//        "set $pc=&g_pfnVectors",
-//      ],
+    },
+    {
+      "name": "Debug blinky on STM32G4",
+      "cwd": "${userHome}/projects/adaptabuild-example",
+      "executable": "build/blinky/STM32G491xx/blinky/blinky.elf",
+      "request": "launch",
+      "type": "cortex-debug",
+      "runToEntryPoint": "main",
+      "servertype": "external",
+      "gdbTarget": "host.gdb.gateway:3333",
+      "gdbPath": "/usr/bin/gdb-multiarch",
+      "svdPath": "${userHome}/projects/adaptabuild-example/src/third_party/stm32-svd/g4/STM32G491xx.svd",
+//    "showDevDebugOutput": "raw",
     },
     {
       "name": "Debug foo on max32690",

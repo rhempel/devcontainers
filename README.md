@@ -1,15 +1,14 @@
 ## Introduction
 
-This repository holds two kinds of artifacts.
-
-- Docker/Podman base image build scripts
-- Docker/Podman devcontainer build scripts
+This repository holds Docker/Podman container base image build scripts
+that let you to build general purpose development environments
+that can be quickly extended as needed for specific use cases.
 
 Both [Docker][Docker] and [Podman][Podman] container environments are
 supported under Windows, Linux, and MacOS with the same scripts so it
 really doesn't matter which environment you choose.
 
-Podman can read Docker files, and other tools like VSCode already know
+Podman can read Docker files, and tools like VSCode already know
 how to use Docker files, so we maintain the convention of using `docker` in
 those filenames, even when we are building images and containers using Podman.
 
@@ -21,22 +20,45 @@ The following terms are useful to keep in mind:
 | Term         | Description |
 | -            | -           |
 | Image        | The template for a container - you can re-use the same image for multiple containers
-| Volume       | A file system that can be attached to a running container
 | Container    | An instance of an image set up for a specific task
 | Devcontainer | A special type of container that VSCode can interact with from the host machine
-
+| Volume       | A file system that can be attached to a running container
 
 :exclamation: If you are using Podman, then you will need to make a
-few adjustments to be able to use the Docker support plugin and to
+few adjustments to be able to use the VSCode Docker support plugin and to
 connect from the container to a network port on the host machine. This
-is described in the section on Podman Specific Support near the end of
-this document.
+is described in [Podman Specific Setup for Windows](#Podman-Specific-Setup-for-Windows)
+near the end of this document.
+
+## Install a Container Environment
+
+If you have not already done so, choose and install a containerization
+environment.
+
+- [Docker Windows Install]
+- [Podman Windows Install]
+
+Read and follow the instructions for using the WSL system with your
+containerization environnment, including any computer restarts.
+
+### Post--Install Instructions for Podman
+
+For the highest level of security, we want to run our Podman containers
+as rootless and with no user mode networking. Open a command prompt and
+run:
+
+```
+podman machine stop
+podman machine set --rootful=false
+podman machine set --user-mode-networking=false
+podman machine start
+```
 
 ## Docker/Podman Base Image Builds
 
-The first step is to build a base image that can be used to
+We are now ready to begin building a base image that can be used to
 build a devcontainer. Why do it like this? Mainly to speed up the
-creation of multiple devcontainers using a common base development.
+creation of multiple devcontainers using a common base image.
 
 For example, I do embedded systems development in C, and also
 tasks like writing for my website or 3D modelling that use
@@ -52,17 +74,17 @@ Evans][how-containers-work].
 If you have ever wondered how containers get their default names, then
 [this file][container-names] will be interesting.
 
-## Starting a Base Image Build
+### Starting a Base Image Build
 
 Docker and Podman have almost identical command lines. This is by design as
-Podman came after Docker, and rather than design yet another almost compatible
+Podman came after Docker. Rather than develop yet another _almost_ compatible
 command line, the Podman team wisely chose to simply duplicate the semantics
 of Docker. They even went so far as to be able to read the Dockerfile format.
 
 | Environment | Version | Notes |
 | -            | - | - |
-| Docker       | 4.32.0+ | The traditional `build` command is now legacy, so we will be using `buildx` instead. If you need more control over the process, refer to the [Docker CLI reference for `buildx`][Docker buildx].
-| Podman       | 1.16.2+ | Podman uses `image` instead of `buildx` - the parameters are otherwise the same. [Podman CLI reference for `image`][Podman image].
+| Docker       | 4.32.0+ | The traditional `build` command is now legacy, so we use `buildx` instead. If you need more control over the process, refer to the [Docker CLI reference for `buildx`][Docker buildx].
+| Podman       | 1.16.2+ | Podman also supports `buildx` - but not all of the features from Docker are available. [Podman CLI reference for `build`][Podman build].
 
 :exclamation: In each of the code sections below, you will see two command
 lines, one for the Docker environment, and one for Podman - choose
@@ -72,8 +94,8 @@ the one suitable for your environment.
 make use-case specific changes when we build the devcontainer from the
 base image.
 
-:warning: In the examples below, we refer to the Ubuntu version as `xx.yy`.
-Use the actual version in the commands below.
+:warning: In the examples, we refer to the Ubuntu version as `xx.yy`.
+Use the actual version when you type the command, for example 22.04.
 
 :warning: On Windows, you will need to use the `\` as a path separator.
 
@@ -85,7 +107,7 @@ cd path/to/ubuntu-xx.yy-embedded
 # Choose podman or docker depending on your containerization tool
 #
 docker buildx build -f Dockerfile -t ubuntu-xx.yy-embedded .
-podman image  build -f Dockerfile -t ubuntu-xx.yy-embedded .
+podman buildx build -f Dockerfile -t ubuntu-xx.yy-embedded .
 
 NOTE: Don't forget the trailing "."
 ```
@@ -97,14 +119,14 @@ lives, you can just do this:
 # Choose podman or docker depending on your containerization tool
 #
 docker buildx build -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded
-podman image  build -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded
+podman buildx build -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded
 ```
 
 Depending on network and computer speed, the build time will vary. On my
 laptop it's about 5 minutes without the cache - and not even 5 seconds with
 the cache.
 
-## Renaming Base Images
+### Renaming Base Images
 
 Building a base image from the instructions above will result in
 an image with the name `ubuntu-xx.yy-embedded:latest`. The tag
@@ -214,7 +236,7 @@ As long as the Ubuntu Jammy package maintainers keep the version of
 Support version, so we can be confident that the version number of `ssh`
 is unlikely to change, except for security patches.
 
-## Podman Specific Changes for Windows
+## Podman Specific Setup for Windows
 
 There are two relatively simple changes required to be able to use
 Podman instead of Docker for your container management.
@@ -342,7 +364,7 @@ you. One way around this is to force a build without the cache:
 # Choose podman or docker depending on your containerization tool
 #
 docker buildx build --no-cache -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded-docker
-podman image  build --no-cache -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded-docker
+podman buildx build --no-cache -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded-docker
 ```
 
 As an absolute last resort, you can consider clearing out your entire
@@ -350,11 +372,11 @@ Docker cache - this can actually free up quite a bit of disk space, but you
 will slow down any subsequent container builds until the cache is refilled.
 
 ```
-# Choose podman or docker depending on your containerization tool
-#
 docker buildx prune -f
-podman image  prune -f
 ```
+
+Podman users will need to manage unused images, containers, and volumes either
+with the GUI or command lines.
 
 ## More Detailed Information
 
@@ -364,7 +386,9 @@ https://medium.com/@guillem.riera/making-visual-studio-code-devcontainer-work-pr
 [Docker]: https://docs.docker.com
 [Podman]: https://podman.io/
 [Docker buildx]: https://docs.docker.com/reference/cli/docker/buildx/build
-[Podman image]: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+[Podman build]: https://docs.podman.io/en/latest/markdown/podman-build.1.html
+[Docker Windows Install]: https://docs.docker.com/desktop/setup/install/windows-install/
+[Podman Windows Install]: https://podman-desktop.io/docs/installation/windows-install
 [Docker tag]: https://docs.docker.com/reference/cli/docker/image/tag
 [Podman tag]: https://docs.podman.io/en/latest/markdown/podman-tag.1.html
 [Docker image save]: https://docs.docker.com/reference/cli/docker/image/save

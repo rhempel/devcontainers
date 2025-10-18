@@ -19,4 +19,8 @@
   "task.autoDetect": "off",
   "task.allowAutomaticTasks": "off",
   "cortex-debug.variableUseNaturalFormat": false,
+  "files.associations": {
+    "*.rst": "raw",
+    "timer.h": "c"
+  },
 }

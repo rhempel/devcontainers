@@ -6,7 +6,10 @@ that can be quickly extended as needed for specific use cases.
 
 Both [Docker][Docker] and [Podman][Podman] container environments are
 supported under Windows, Linux, and MacOS with the same scripts so it
-really doesn't matter which environment you choose.
+really doesn't matter which environment you choose. 
+
+:exclamation: There are differences between Docker and Podman so be
+sure to read any special notes like this carefully.
 
 Podman can read Docker files, and tools like VSCode already know
 how to use Docker files, so we maintain the convention of using `docker` in
@@ -44,21 +47,34 @@ containerization environnment, including any computer restarts.
 ### Post--Install Instructions for Podman
 
 For the highest level of security, we want to run our Podman containers
-as rootless and with no user mode networking. Open a command prompt and
-run:
+as rootless and with user mode networking. User mode networking is the
+default for Linux and MacOS so we might as well set it up that way on
+Windows to minimize differences. Open a command prompt and run:
 
 ```
 podman machine stop
 podman machine set --rootful=false
-podman machine set --user-mode-networking=false
+podman machine set --user-mode-networking=true
 podman machine start
 ```
+
+### Podman on Windows with Multiple WSL Instances
+
+EXPAND ON THIS NOTE - ITS NOT READY TO PUBLISH AS-IS
+
+https://podman-desktop.io/docs/podman/accessing-podman-from-another-wsl-instance
+
+sudo apt install podman-remote
+alias podman=podman-remote
+podman system connection add --default podman-machine-default unix:///mnt/wsl/podman-sockets/podman-machine-default/podman-user.sock
+sudo usermod --append --groups 10 $(whoami)
 
 ## Docker/Podman Base Image Builds
 
 We are now ready to begin building a base image that can be used to
-build a devcontainer. Why do it like this? Mainly to speed up the
-creation of multiple devcontainers using a common base image.
+build a devcontainer. Why use base images? Mainly to speed up the
+creation of multiple devcontainers using a common base image and to
+avoid duplication.
 
 For example, I do embedded systems development in C, and also
 tasks like writing for my website or 3D modelling that use
@@ -268,6 +284,17 @@ will use `podman` to start, stop, and rebuild containers.
 
 ### Podman Container -> Host Networking in Windows
 
+CHANGE "path\to\user\.wslconfig":
+
+[wsl2]
+autoProxy=false
+dnsTunneling=true
+
+ON WINDOWS, container and machine config is here:
+
+C:\Users\HempelRa\AppData\Roaming\containers
+
+
 The Podman network name resolution works differently than Docker, so
 we will need to do some one-time configuration to get around it.
 
@@ -276,8 +303,15 @@ address, and you can retreive it from a PowerShell session (your IP
 address will be different):
 
 ```
-Get-NetIpAddress | where { $_.InterfaceAlias -Like '*WSL*' -and $_.AddressFamily -EQ "IPv4" } |select -ExpandProperty IPAddress
+Get-NetIpAddress | where { $_.InterfaceAlias -Like '*WSL*' -and $_.AddressFamily -EQ 'IPv4' } | select -ExpandProperty IPAddress
 172.17.32.1
+```
+
+or from `cmd`:
+
+```
+powershell -command "Get-NetIpAddress | where { $_.InterfaceAlias -Like '*WSL*' -and $_.AddressFamily -EQ 'IPv4' } | select -ExpandProperty IPAddress"
+
 ```
 
 Now start your Podman machine:
@@ -287,7 +321,7 @@ wsl --distribution podman-machine-default
 ```
 
 and edit (using `sudo vi`) the `/etc/containers/containers.conf` file
-to add this line in the `[continers]` section. This will allow
+to add this line in the `[containers]` section. This will allow
 `host.containers.internal` to resolve to the IP address that the
 host presents to `podman-machine-default` - of course your IP
 address will be different.

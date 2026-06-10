@@ -1,0 +1,55 @@
+----------------------
+
+Set your defaulkt timezone in containers.conf
+
+-----------------------
+
+investigate overriding userns=host
+
+-----------------------
+
+For ssh access, need to create /etc/ssh/ssh_config.d/30-userlist.conf
+and add
+
+AllowUsers username
+
+then
+
+sudo /etc/init.d/ssh restart
+
+-----------------------
+
+To add your authorized keys ...
+
+(umask 177 && cat ~/.ssh/id_hempelra.pub  > ~/.ssh/authorized_keys)
+
+
+podman machine start
+
+
+cd C:\Users\HempelRa\Projects\devcontainers\rhempel-docker-devcontainers
+
+podman buildx build ^
+    -t adaptabuild-debian-13 ^
+    --no-cache ^
+    --build-arg USER_NAME=%USERNAME% ^
+    --build-arg USER_UID=1000 ^
+    --build-arg USER_GID=1000 ^
+    --build-arg USER_LANG=en_US.UTF-8 ^
+    --build-arg USER_TZ=local ^
+    adaptabuild-debian-13/.devcontainer
+
+podman create -it ^
+           --user %USERNAME%:%USERNAME% ^
+           --publish 127.0.0.1:22002:22 ^
+           --add-host host.gdb.gateway:host-gateway ^
+           --volume adaptabuild-debian-13-volume:/home/%USERNAME%/projects ^
+           --volume ./adaptabuild-debian-13/.devcontainer:/home/%USERNAME%/.devcontainer:O ^
+           --volume %USERPROFILE%/.ssh:/home/%USERNAME%/.ssh:O ^
+           adaptabuild-debian-13 bash --rcfile /home/%USERNAME%/.devcontainer/commands/postStartCommand.sh
+
+#           --volume C:/Users/%USERNAME%/.ssh:/home/%USERNAME%/.ssh:O ^
+
+
+podman start -ai 8752
+

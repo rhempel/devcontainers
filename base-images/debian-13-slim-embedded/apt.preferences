@@ -1,0 +1,91 @@
+Package: git
+Pin: version 1:2.47*
+Pin-Priority: 1000
+
+Package: ssh
+Pin: version 1:10.0*
+Pin-Priority: 1000
+
+Package: make
+Pin: version 4.4.1*
+Pin-Priority: 1000
+
+Package: python3
+Pin: version 3.13.5*
+Pin-Priority: 1000
+
+Package: build-essential
+Pin: version 12.12*
+Pin-Priority: 1000
+
+Package: gcc-arm-none-eabi
+Pin: version 15:14.2*
+Pin-Priority: 1000
+
+Package: picolibc-arm-none-eabi
+Pin: version 1.8.10*
+Pin-Priority: 1000
+
+Package: gdb-multiarch
+Pin: version 16.3*
+Pin-Priority: 1000
+
+Package: binutils-multiarch-dev
+Pin: version 2.44*
+Pin-Priority: 1000
+
+Package: python3-clang
+Pin: version 1:19.0*
+Pin-Priority: 1000
+
+Package: python3-pip
+Pin: version 25.1.1*
+Pin-Priority: 1000
+
+Package: python3-pyserial-asyncio-fast
+Pin: version 0.16*
+Pin-Priority: 1000
+
+Package: python3-sphinx
+Pin: version 8.1.3*
+Pin-Priority: 1000
+
+Package: python3-sphinx-argparse
+Pin: version 0.5.2*
+Pin-Priority: 1000
+
+Package: python3-sphinxcontrib.plantuml
+Pin: version 0.5*
+Pin-Priority: 1000
+
+Package: python3-sphinx-rtd-theme
+Pin: version 3.0.2*
+Pin-Priority: 1000
+
+Package: lcov
+Pin: version 2.3.1*
+Pin-Priority: 1000
+
+Package: cpputest
+Pin: version 4.0*
+Pin-Priority: 1000
+
+Package: graphviz
+Pin: version 2.42.4*
+Pin-Priority: 1000
+
+Package: default-jre
+Pin: version 2:1.21*
+Pin-Priority: 1000
+
+Package: vim
+Pin: version 2:9.1*
+Pin-Priority: 1000
+
+Package: bash-completion
+Pin: version 1:2.16*
+Pin-Priority: 1000
+
+Package: wget
+Pin: version 1.25.0*
+Pin-Priority: 1000

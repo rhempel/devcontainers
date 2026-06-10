@@ -23,20 +23,20 @@
         "command": "sphinx-build -M html adaptabuild/doc/sphinx/source artifacts/doc/adaptabuild"
       },
       {
-        "label": "Build STM32G031xx foo",
+        "label": "Build STM32G031xx validate_toolchain",
         "options": {
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild_config.mak MCU=STM32G031xx PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=STM32G031xx PRODUCT=validate_toolchain"
       },
       {
-        "label": "Build STM32G491xx foo",
+        "label": "Build STM32G491xx validate_toolchain",
         "options": {
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild_config.mak MCU=STM32G491xx PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=STM32G491xx PRODUCT=validate_toolchain"
       },
       {
         "label": "Build STM32G491xx blinky",
@@ -47,64 +47,64 @@
         "command": "make -f adaptabuild_config.mak MCU=STM32G491xx PRODUCT=blinky"
       },
       {
-        "label": "Build STM32F051R8 foo",
+        "label": "Build STM32F051R8 validate_toolchain",
         "options": {
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild_config.mak MCU=STM32F051R8 PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=STM32F051R8 PRODUCT=validate_toolchain"
       },
       {
-        "label": "Build STM32H7A3ZI foo",
+        "label": "Build STM32H7A3ZI validate_toolchain",
         "options": {
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild_config.mak MCU=STM32H7A3ZI PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=STM32H7A3ZI PRODUCT=validate_toolchain"
       },
       {
-        "label": "Build STM32L452RE foo",
+        "label": "Build STM32L452RE validate_toolchain",
         "options": {
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild_config.mak MCU=STM32L452RE PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=STM32L452RE PRODUCT=validate_toolchain"
       },
 //      {
-//        "label": "Build pico2040 foo",
+//        "label": "Build pico2040 validate_toolchain",
 //        "options": {
 //          "cwd": "${workspaceFolder}/projects/adaptabuild-example"
 //        },
 //        "type": "shell",
-//        "command": "make -f adaptabuild_config.mak MCU=pico2040 PRODUCT=foo"
+//        "command": "make -f adaptabuild_config.mak MCU=pico2040 PRODUCT=validate_toolchain"
 //      },
       {
-        "label": "Build nRF52832 foo",
+        "label": "Build nRF52832 validate_toolchain",
         "options": {
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild_config.mak MCU=nRF52832 PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=nRF52832 PRODUCT=validate_toolchain"
       },
       {
-        "label": "Build max32690 foo",
+        "label": "Build max32690 validate_toolchain",
         "options": {
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild_config.mak MCU=max32690 PRODUCT=foo"
+        "command": "make -f adaptabuild_config.mak MCU=max32690 PRODUCT=validate_toolchain"
       },
       {
-        "label": "Build All",
+        "label": "Build All validate_toolchain",
         "dependsOn": [
-          "Build STM32G031xx foo",
-          "Build STM32G491xx foo",
-          "Build STM32F051R8 foo",
-          "Build STM32H7A3ZI foo",
-          "Build STM32L452RE foo",
-          "Build pico2040 foo",
-          "Build nRF52832 foo",
-          "Build max32690 foo"
+          "Build STM32G031xx validate_toolchain",
+          "Build STM32G491xx validate_toolchain",
+          "Build STM32F051R8 validate_toolchain",
+          "Build STM32H7A3ZI validate_toolchain",
+          "Build STM32L452RE validate_toolchain",
+//        "Build pico2040 validate_toolchain",
+          "Build nRF52832 validate_toolchain",
+          "Build max32690 validate_toolchain"
         ],
         "problemMatcher": []
       },
@@ -122,7 +122,7 @@
           "cwd": "${workspaceFolder}/projects/adaptabuild-example"
         },
         "type": "shell",
-        "command": "make -f adaptabuild_config.mak MCU=host PRODUCT=foo unittest"
+        "command": "make -f adaptabuild_config.mak MCU=host PRODUCT=validate_toolchain unittest"
       }
     ]
 }

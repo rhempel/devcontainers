@@ -19,7 +19,7 @@ the command scripts that are executed as part of the container
 create/start/connect cycle fail.
 
 The issue was that my managed Windows system has inconsistent values
-for some critical environment variables. Looking throuhg the logs we
+for some critical environment variables. Looking through the logs we
 can see that the Windows environment variables include:
 
 ```

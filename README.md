@@ -1,44 +1,40 @@
 ## Introduction
 
-This repository holds Docker/Podman container base image build scripts
-that let you to build general purpose development environments
-that can be quickly extended as needed for specific use cases.
+This repository holds Podman container image build scripts
+that let you create and manage general purpose secure environments
+that can be extended as needed for specific use cases.
 
-Both [Docker][Docker] and [Podman][Podman] container environments are
-supported under Windows, Linux, and MacOS with the same scripts so it
-really doesn't matter which environment you choose. 
+We focus on Podman as the container engine and VSCodium as the container management tool, but the same concepts apply to Docker. Podman can
+read Docker files, and tools like VSCodium already know how to use Docker files, so we maintain the convention of using `docker` in
+those filenames, even when we are building images and containers
+using Podman.
 
-:exclamation: There are differences between Docker and Podman so be
-sure to read any special notes like this carefully.
+The process for creating and managing containers is the same on
+Linux, MacOS, Windows, and eventually *BSD when I get around to
+testing that.
 
-Podman can read Docker files, and tools like VSCode already know
-how to use Docker files, so we maintain the convention of using `docker` in
-those filenames, even when we are building images and containers using Podman.
+:exclamation: Running containers on Windows is a little different
+  on Windows - so be sure to read these exclamations carefully!
 
-I won't recommend one over the other, it's up to you to choose what
-makes the most sense for your personal or business environment.
-
-The following terms are useful to keep in mind:
+The following terms are important:
 
 | Term         | Description |
 | -            | -           |
 | Image        | The template for a container - you can re-use the same image for multiple containers
-| Container    | An instance of an image set up for a specific task
-| Devcontainer | A special type of container that VSCode can interact with from the host machine
+| Container    | An instance of an image that is configured for a specific task
 | Volume       | A file system that can be attached to a running container
+| Devcontainer | A Microsoft specific variant of a container that VSCode can manipulate directly. We can get most of the devcontainer features in other ways
 
-:exclamation: If you are using Podman, then you will need to make a
-few adjustments to be able to use the VSCode Docker support plugin and to
-connect from the container to a network port on the host machine. This
-is described in [Podman Specific Setup for Windows](#Podman-Specific-Setup-for-Windows)
-near the end of this document.
 
 ## Install a Container Environment
 
 If you have not already done so, choose and install a containerization
-environment.
+environment. There is no need to install the ``-desktop`` variant of the
+container environment. We will be doing our work from the command line
+and then using VSCodium to interact with Podman.
 
-- [Docker Windows Install]
+- [Podman Windows Install]
+- [Podman Windows Install]
 - [Podman Windows Install]
 
 Read and follow the instructions for using the WSL system with your
@@ -411,6 +407,14 @@ docker buildx prune -f
 
 Podman users will need to manage unused images, containers, and volumes either
 with the GUI or command lines.
+
+
+:exclamation: If you are using Podman, then you will need to make a
+few adjustments to be able to use the VSCode Docker support plugin and to
+connect from the container to a network port on the host machine. This
+is described in [Podman Specific Setup for Windows](#Podman-Specific-Setup-for-Windows)
+near the end of this document.
+
 
 ## More Detailed Information
 

@@ -1,0 +1,52 @@
+#!/bin/bash
+#
+# This command is executed as the container user every time the container
+# is restarted
+#
+# NOTE: Resuming the container after pausing it does not execute
+#       this command
+#
+date >> /tmp/postStartCommand.log
+
+# Put the current user into an environment variable. Containers
+# run with the login user "root" running as whatever the USER varaible
+# is set to in the Dockerfile
+#
+export WHOAMI=$(whoami)
+
+cd ~
+
+# The volume that is mounted to ~/projects is created automatically
+# if it does not exist when the container is created, and the mount
+# point is owned by root.
+#
+# Now set the correct ownership of ~/projects
+#
+sudo chown ${WHOAMI}:${WHOAMI} projects
+
+# The ~/.ssh folder is mounted as an overlay, so any changes here
+# don't affect the host system, and changes on the host system 
+# are invisible until the next time the container is restarted.
+#
+# Now set the correct ownership to the entire ~/.ssh folder
+# and then set the correct permissions for the contents
+#
+sudo chown -R ${WHOAMI}:${WHOAMI} .ssh
+
+chmod 700 .ssh
+chmod 600 .ssh/*
+chmod 644 .ssh/*.pub
+
+# Create the authorized_keys file , then append the keys that
+# you want to authorize for this container.
+#
+(umask 177 && touch -c .ssh/authorized_keys)
+cat .ssh/id_hempelra.pub >> .ssh/authorized_keys
+
+# Now update the ssh_config.d folder with a file that will allow
+# our user to access the container over ssh
+#
+sudo sh -c "echo 'AllowUsers ${WHOAMI}' > /etc/ssh/sshd_config.d/30-${WHOAMI}.conf"
+sudo /etc/init.d/ssh restart
+
+bash --login

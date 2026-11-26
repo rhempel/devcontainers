@@ -1,0 +1,10 @@
+# Add some tolerance to the apt system for Mac machines ... not sure if
+# this is still needed.
+#
+# Potential solutions:
+# [failed] https://stackoverflow.com/questions/48645936/docker-for-mac-hash-sum-mismatch 
+# [worked] https://stackoverflow.com/questions/67732260/how-to-fix-hash-sum-mismatch-in-docker-on-mac
+#
+Acquire::http::Pipeline-Depth 0;
+Acquire::http::No-Cache true;
+Acquire::BrokenProxy    true;

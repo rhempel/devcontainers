@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# This command is executed as root, just before the user is switched
+# to actual container user
+
+ln -s /etc/devcontainer/postAttachCommand /etc/profile.d/99postAttachCommand.sh
+
+date >> /tmp/postCreateCommand.log
+
+# Now install everything we need for default - use Debian
+# python3 packages if possible
+#
+apt update && \
+apt install --no-install-recommends -y \
+    ca-certificates \
+    tzdata \
+    locales \
+    git \
+    ssh \
+    vim

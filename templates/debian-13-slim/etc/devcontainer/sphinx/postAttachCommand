@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# This command is executed as the container user every time a login
+# shell is attached to the container. It exists as a symlink from the system
+# /etc/profile.d folder
+#
+date >> /tmp/postAttachCommand.log
+
+cd

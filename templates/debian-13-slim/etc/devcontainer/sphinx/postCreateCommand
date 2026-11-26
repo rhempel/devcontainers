@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# This command is executed as root, just before the user is switched
+# to actual container user
+
+ln -s /etc/devcontainer/postAttachCommand /etc/profile.d/99postAttachCommand.sh
+
+date >> /tmp/postCreateCommand.log
+
+# Now install everything we need to run sphinx - use Debian
+# python3 packages if possible
+#
+apt update && \
+apt install --no-install-recommends -y \
+    ca-certificates \
+    tzdata \
+    locales \
+    git \
+    ssh \
+    make \
+    python3 \
+    python3-pip \
+    python3-clang \
+    python3-sphinx \
+    python3-sphinx-rtd-theme \
+    python3-sphinxcontrib.plantuml \
+    graphviz \
+    default-jre \
+    vim \
+    wget
+
+# RUN wget -P /opt -x -nH --cut-dirs=1 \
+#     https://github.com/plantuml/plantuml/releases/download/v1.2025.9/plantuml-1.2025.9.jar \
+#  && ln -s /opt/plantuml/releases/download/v1.2025.9/plantuml-1.2025.9.jar /opt/plantuml/plantuml.jar
+# 
+# # Prepare to install all the additional Python packages
+# #
+# COPY requirements.txt /tmp/requirements.txt
+
+# this_user=$1
+#
+# sudo chown "$this_user" /home/"$this_user"/projects
+# sudo ln -sf /usr/bin/python3 /usr/bin/python

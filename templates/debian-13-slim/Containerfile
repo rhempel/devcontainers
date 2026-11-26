@@ -1,0 +1,67 @@
+FROM "debian:13-slim"
+
+USER root
+
+# ARG values only have a lifetime of the container build process - they
+# will not exist when running the container. The ARGs can be overridden
+# on the command line when building the container - do not change the
+# defaults here!
+#
+# See the README.md file for more details.
+# 
+ARG USER_NAME=debian
+ARG USER_UID=1000
+ARG USER_GID=${USER_UID}
+ARG USER_LANG=en_US.UTF-8
+ARG USER_TZ=Etc/EST
+ARG USER_SHELL=/usr/bin/bash
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG CONTAINER_CONFIG=default
+
+# Copy files that will help while we are configuring the container
+#
+COPY etc/apt  /etc/apt
+COPY --chmod=755 etc/devcontainer/${CONTAINER_CONFIG} /etc/devcontainer
+
+# Add all of the packages useful for the tasks this image will
+# be used for.
+#
+# See this note on how apt pinning works - we want to build containers
+# with very specific versions, but also allow security updates so
+# that a later container build doesn't break because of a patch.
+#
+# https://wiki.debian.org/AptConfiguration#Using_pinning
+#
+# CHANGE THIS TO SOMETHING THAT HAPPENS AFTER THE CONTAINER IS
+# CREATED BY RUNNING THE postCreate.sh SCRIPT
+#
+# PART OF THE COPY apt.preferences /etc/apt/preferences
+
+RUN apt update && \
+    apt install --no-install-recommends -y \
+        sudo
+
+# Create default user, set up their group and home directory, and add them
+# to the sudo group. Create an entry for them in /etc/sudoers.d so that we
+# don't need to mess with the /etc/sudoers file directly!
+#
+RUN groupadd -o --gid $USER_GID $USER_NAME \
+ && useradd --uid $USER_UID --gid $USER_GID \
+             -d /home/$USER_NAME -m \
+             -s $USER_SHELL \
+             $USER_NAME \
+ && gpasswd -a $USER_NAME sudo \
+ && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
+ && chmod 0440 /etc/sudoers.d/$USER_NAME
+
+# Just before switching to the new user, run the postCreateCommand
+# script where we download and install the tools required for
+# this container to do its job(s)
+#
+RUN /etc/devcontainer/postCreateCommand
+
+# Set the default user - omit if you want to keep the default
+# as root. (You don't)
+#
+USER $USER_NAME

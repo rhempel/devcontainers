@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+# This command is executed as root, just before the user is switched
+# to actual container user
+
+ln -s /etc/devcontainer/postAttachCommand /etc/profile.d/99postAttachCommand.sh
+
+date >> /tmp/postCreateCommand.log
+
+# Now install everything we need to run sphinx - use Debian
+# python3 packages if possible
+#
+apt update && \
+apt install --no-install-recommends -y \
+        ca-certificates \
+        tzdata \
+        locales \
+        git \
+        ssh \
+        python3 \
+        build-essential \
+        gcc-arm-none-eabi \
+        picolibc-arm-none-eabi \
+        gdb-multiarch \
+        binutils-multiarch-dev \
+        picotool \
+        python3-clang \
+        python3-pip \
+        python3-sphinx \
+        lcov \
+        cpputest \
+        graphviz \
+        default-jre \
+        vim \
+        bash-completion \
+        wget
+
+ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb \
+  && ln -s /usr/bin/nm /usr/bin/nm-multiarch \
+  && ln -s /usr/bin/objdump /usr/bin/objdump-multiarch
+
+wget -P /opt -x -nH --cut-dirs=1 \
+     https://github.com/plantuml/plantuml/releases/download/v1.2026.10/plantuml-1.2026.10.jar \
+  && ln -s /opt/plantuml/releases/download/v1.2026.10/plantuml-1.2026.10.jar /opt/plantuml/plantuml.jar
+
+# Prepare to install all the additional Python packages
+#
+# COPY requirements.txt /tmp/requirements.txt
+
+sudo ln -sf /usr/bin/python3 /usr/bin/python

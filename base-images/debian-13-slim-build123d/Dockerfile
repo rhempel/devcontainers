@@ -30,10 +30,14 @@ RUN apt install --no-install-recommends -y \
         ca-certificates \
         tzdata \
         locales \
+        git \
+        ssh \
         python3 \
         python3-pip \
+        python3-venv \
         vim \
-        bash-completion
+        bash-completion \
+        wget
 
 ##         git \
 ##         ssh \

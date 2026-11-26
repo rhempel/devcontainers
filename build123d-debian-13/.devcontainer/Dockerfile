@@ -1,4 +1,4 @@
-FROM localhost/debian-13-slim-jupyter
+FROM localhost/debian-13-slim-build123d
 
 # Note: The GID is super critical to get right - on my Linux machine it does
 #       not seem to matter, but on Windows I believe it requires the GID to
@@ -58,12 +58,14 @@ RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
 # Add griffo.io apt repository for the uv package
 #
-RUN curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg \
- && echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
+# RUN curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg \
+#  && echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
 
 RUN apt update \
  && apt install --no-install-recommends -y \
-        uv 
+        libgl-dev
+
+#         uv 
 #        jpegoptim \
 #        optipng \
 #        tidy \

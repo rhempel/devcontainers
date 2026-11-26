@@ -1,13 +1,34 @@
-BREAK THIS DOCUMENT INTO TWO PARTS:
-
-1. GETTING STARTED WITH PODMAN/VSCODIUM
-2. 
-
 ## Introduction
 
-This repository holds Podman container build scripts
+This repository holds Podman container support files
 that let you create and manage general purpose environments
 that can be extended as needed for specific use cases.
+
+Why is this important?
+
+With the increasing complexity of managing your development
+environment, it's becoming more likely that an upgrade a package
+or application and its support libraries might cause other
+software on your system to break.
+
+One option is to have multiple computers that do only one thing, but
+that's wasteful in terms of energy, space, and money because most
+of the time they will be sitting idle.
+
+Containers make it relatively easy to set up and maintain single
+purpose computers that you "spin up" on your host machine as
+needed. You might think that you need a heavy-duty host computer
+to pull this off, but I've done this on a 10 year old laptop with
+4 GB RAM and a 128 GB SSD. My long term test system is an 8th Gen
+i5 mini-PC with 16GB of RAM and a 512 GB SSD.
+
+Long story short, containers make it possible to keep your daily
+driver computer insulated from your software experiments. They
+also support the idea of "infrastructure as code" - which means you
+can avoid lengthy descriptions of how to set up a dedicated machine
+and instead use scripts to do it automagically.
+
+## Podman and VSCodium
 
 We focus on Podman as the container engine and VSCodium as the container
 management tool, but the same concepts apply to Docker and VSCode.
@@ -23,8 +44,7 @@ a starting point for your own container management needs. They help
 me to build containers for embedded systems and Python development.
 
 :exclamation: Currently I only have the Linux build scripts in place, the
-Windows and MacOS scripts are under development. I'm looking at using `jq`
-as an external parser for JSON files that describe the container options.
+Windows and MacOS scripts are under development.
 
 :exclamation: Running containers on Windows is a little different - so
     be sure to read these exclamations carefully!
@@ -82,7 +102,7 @@ That being said, the following plugins for VSCodium are recommended:
 | [Container Tools][Container Tools Plugin] (ms-azuretools) | View and control containers, volumes, and images |
 | [Compare Folders][Compare Folders Plugin] (moshfeu) | Compare files and folders across the network |
 
-## Podman Image Builds
+## Podman Image Overview
 
 At one point, I advocated for building base images, and then building
 the final image that would eventually be used to create the container.
@@ -105,27 +125,18 @@ with Podman.
 
 One thing we can do to simplify container management is to adopt a naming
 convention. In the example folder structure below we use the following
-common names and definitions:
+common container descriptor names and definitions:
 
 | Name | Example | Description |
 | -    | -       | -           |
-| Container Name | `debian` | The name of the container base image
-| Container Tag | `13-slim` | The tag of the container base image (default is `latest`)
-| Container Variant | `sphinx` | The configuration variant of the new container (default is `default`)
-
-
-
-
-Container build script variables for a container variant
-
+| Name | `debian` | The name of the container base image (default is `debian`)
+| Tag | `13-slim` | The tag of the container base image (default is `latest`)
+| Variant | `default` | The configuration variant of the new container (default is `default`)
 
 First, we will review the directories and files that define how are containers
 are built.
 
 ```
- +-configs
- | +-debian-13-slim-default
- | +-debian-13-slim-sphinx
  +-scripts
  | +-windows
  | +-linux
@@ -134,16 +145,20 @@ are built.
  +-templates
  | +-debian-13-slim
  |   +-Containerfile
+ |   +-configs
+ |   | +-default
+ |   | | +-container_variables.sh
+ |   | | +-scripts
+ |   | |   +-postAttachCommand
+ |   | |   +-postCreateCommand
+ |   | |   +-postStartCommand
+ |   | +-sphinx
+ |   |   +-container_variables.sh
+ |   |   +-scripts
+ |   |     +-postAttachCommand
+ |   |     +-postCreateCommand
+ |   |     +-postStartCommand
  |   +-etc
- |     +-devcontainer
- |     | +-default
- |     | | +-postAttachCommand
- |     | | +-postCreateCommand
- |     | | +-postStartCommand
- |     | +-sphinx
- |     |   +-postAttachCommand
- |     |   +-postCreateCommand
- |     |   +-postStartCommand
  |     +-apt
  |       +-preferences.d
  |       | +-99container.pref
@@ -154,7 +169,7 @@ are built.
 ```
 
 In our example filesystem, we are using `debian-13-slim` as the base image, and we support two variants.
-The first is `default` - a minimal container demonstrating best practices for configuraiton. The
+The first is `default` - a minimal container demonstrating best practices for configuration. The
 second is `sphinx` - a container that supports Python development together with Sphinx for building
 documentation.
 
@@ -162,195 +177,169 @@ This table describes the purpose of each folder ...
 
 | Folder | Description |
 | -      | -           |
-| `configs` | Container build script variables for a container variant
-| `configs/debian-13-slim-default` | Container build script variables for the `default` variant of `debian-13-slim`
-| `configs/debian-13-slim-sphinx` | Container build script variables for the `sphinx` variant of `debian-13-slim`
 | `scripts` | Container build scripts for supported host platforms
 | `scripts/linux` | Container build scripts for Linux host platforms
 | `templates` | Template files for container images and instances
 | `templates/debian-13-slim` | Template files for `debian-13-slim` containers
 | `templates/debian-13-slim/Containerfile` | Build instructions for `debian-13-slim` containers
-| `templates/debian-13-slim/etc` | Configuration files for `debian-13-slim` containers
+| `templates/debian-13-slim/configs` | Build configurations for `debian-13-slim` variants
+| `templates/debian-13-slim/configs/default` | Build configurations for `debian-13-slim-default`
+| `templates/debian-13-slim/configs/sphinx` | Build configurations for `debian-13-slim-sphinx`
+| `templates/debian-13-slim/etc` | Files to copy to `debian-13-slim` containers
 | `templates/debian-13-slim/etc/apt` | Configuration for `apt` in `debian-13-slim` containers
-| `templates/debian-13-slim/etc/devcontainer` | Configuration for `debian-13-slim` container variants
-| `templates/debian-13-slim/etc/devcontainer/default` | Configuration for `debian-13-slim` default container
-| `templates/debian-13-slim/etc/devcontainer/sphinx` | Configuration for `debian-13-slim` Sphinx container
 
-### Building A Container
+### Scripting How The Container Behaves
 
-Within the `scripts` folder for supported host platforms, we have the following scripts:
+The `scripts` folder in any container variant folder holds at least these
+files that are copied to the container under `/etc/devcontainer` as part of the
+container image creation process.
+
+| File | Description |
+| -      | -          |
+| `postCreateCommand` | Runs as `root` once after the container image is created. No volumes are mounted yet!
+| `postStartCommand`  | Runs as the default user every time the container is started. Volumes are mounted.
+| `postAttachCommand` | Runs as the default user every time a shell is attached to the container
+
+#### Using `postCreateCommand`
+
+This file runs as `root` just before we switch to the default user at container
+image creation time. Besides installing any packages needed for the container to
+do useful work, this script also sets up a soft link for the `postAttachCommand` so
+that it's executed as part of attaching a login shell to the container.
+
+```
+ln -s /etc/devcontainer/postAttachCommand /etc/profile.d/99postAttachCommand.sh
+```
+
+#### Using `postStartCommand`
+
+This file runs as the default user when the container instance is started. Any
+volume mounts and network port mapping is in place when the script runs. The default
+user should be set up to have `sudo` privileges as part of the container setup.
+
+The `postStartCommand` file performs a number of tasks, such as making sure that the
+volume that is mounted under `~/projects` is owned by the container user:
+
+```
+# Put the current user into an environment variable. Containers
+# run with the login user "root" running as whatever the USER varaible
+# is set to in the Dockerfile
+#
+export WHOAMI=$(whoami)
+
+cd ~
+
+# The volume that is mounted to ~/projects is created automatically
+# if it does not exist when the container is created, and the mount
+# point is owned by root.
+#
+# Now set the correct ownership of ~/projects
+#
+sudo chown ${WHOAMI}:${WHOAMI} projects
+```
+
+It also sets up the `~/.ssh` folder to have the correct permissions. Recall
+that as an overlay, it is owned by `root` so we need to set the ownership to
+the correct user and update the permissions to be compatible with the `ssh`
+program requirements.
+
+We can also add our public key to our overlay of the `authorized_keys` file
+and add ourselves to the allowed users for `ssh` without changing anything
+on the host. That will let us `ssh` in to the running container.
+
+```
+chmod 700 .ssh
+chmod 600 .ssh/*
+chmod 644 .ssh/*.pub
+
+# Create the authorized_keys file, then append the keys that
+# you want to authorize for this container.
+#
+(umask 177 && touch -c .ssh/authorized_keys)
+cat .ssh/id_hempelra.pub >> .ssh/authorized_keys
+
+# Now update the ssh_config.d folder with a file that will allow
+# our user to access the container over ssh
+#
+sudo sh -c "echo 'AllowUsers ${WHOAMI}' > /etc/ssh/sshd_config.d/30-${WHOAMI}.conf"
+sudo /etc/init.d/ssh restart
+```
+
+#### Using `postAttachCommand`
+
+This script runs every time we attach a login shell to the container. It's
+where I put anything that needs to run to set up my environment, such as
+changing to a default directory, setting up a prompt string, or anything
+else that I don't want to handle manually.
+
+### Container Build Variants
+
+Creating a new configuration variant `foo` for an existing container template
+is just two steps:
+
+1. Copy the `templates\Name-Tag\configs\default` contents
+   to a new `templates\Name-Tag\configs\foo` folder
+2. Modify the `container_variables` and `scripts\*`
+   contents to suit your needs.
+
+Creating a new container template is a little more involved. This might
+happen if you need to change or upgrade the Linux distribution your containers
+are based on.
+
+You will need to copy `templates/Name-Tag` to a new folder and update
+the `Containerfile` and variant files to support your new target
+distribution.
+
+### Building and Starting A Container
+
+Within the `scripts` folder for supported host platforms, we have the following:
 
 | File | Description |
 | -      | -           |
-| `build_image.sh` | Builds a container image on a Linux host
-| `create_container.sh` | Creates a container instance on a Linux host
+| `build_image` | Builds a container image on a Linux host
+| `create_container` | Creates a container instance on a Linux host
 
-
-
- | Access to containers and remote computers from your host |
-| [Container Tools][Container Tools Plugin] (ms-azuretools) | View and control containers, volumes, and images |
-| [Compare Folders][Compare Folders Plugin] (moshfeu) | Compare files and folders across the network |
-
-<!-- ============================================================================
-# We are now ready to begin building a base image that can be used to
-# build a devcontainer. Why use base images? Mainly to speed up the
-# creation of multiple devcontainers using a common base image and to
-# avoid duplication.
-# 
-# For example, I do embedded systems development in C, and also
-# tasks like writing for my website or 3D modelling that use
-# Python but don't need the C compiler. It makes sense to have
-# two base images, one for embedded development and one for Python.
-# I can then quickly create a task-specific devcontainer with just a few
-# additions.
-# 
-# Containers are awesome tools to simplify your development process. To
-# learn more about how they work, I can recommend [this 'zine by Julia
-# Evans][how-containers-work].
-# 
-# If you have ever wondered how containers get their default names, then
-# [this file][container-names] will be interesting.
-# 
-# ### Starting a Base Image Build
-============================================================================= -->
-
-Docker and Podman have almost identical command lines. This is by design as
-Podman came after Docker. Rather than develop yet another _almost_ compatible
-command line, the Podman team wisely chose to simply duplicate the semantics
-of Docker. They even went so far as to be able to read the Dockerfile format.
-
-| Environment | Version | Notes |
-| -           | - | - |
-| Docker      | 4.32.0+ | The traditional `build` command is now legacy, so we use `buildx` instead. If you need more control over the process, refer to the [Docker CLI reference for `buildx`][Docker buildx].
-| Podman      | 1.16.2+ | Podman also supports `buildx` - but not all of the features from Docker are available. [Podman CLI reference for `build`][Podman build].
-
-:exclamation: From this point forward we will only refer to Podman, but
-Docker should support pretty much the same command lines and Dockerfiles.
-
-:exclamation: I prefer to use Debian images, but of course you can use whatever
-Linux distribution you want for the base of the container. You may need to
-modify some of the `RUN` commands.
-
-:exclamation: I'm assuming that you have `git clone`d this repository and can
-navigate to it on your host in the next step. On Windows, you will need to use
-the `\` as a path separator.
-
-:exclamation: The command lines assume a Linux or MacOS environment, for Windows
-you will need to change the path separator as well as the line continuation
-character.
-
-### Starting an Image Build
-
-The simplest way to kick off the build of a new image is:
+Building our `debian-13-slim-default` container is a two-step process:
 
 ```
-cd path/to/debian-13-slim-base
-podman buildx build -f Containerfile -t debian-13-slim-base .
-
-NOTE: Don't forget the trailing "."
+build_image -t debian-13-slim -c default
+create_container -t debian-13-slim -c default
 ```
 
-If you want to avoid changing to the directory where the `Dockerfile`
-lives, you can just do this:
+The result is a container that can be started using:
 
 ```
-podman buildx build -t debian-13-slim-base path/to/debian-13-slim-base
+podman start -ai debian-13-slim-default
 ```
 
-Depending on network and computer speed, the build time will vary. On my
-machine it's about a minute without the cache - and just a few seconds with
-the cache.
+The `-ai` option attaches the container’s `stdout`, `stderr`, and `stdin`
+to an interactive session. Basically, you get a terminal session to your
+running container.
 
-You can verify that the `Debian 13 (slim)` and our new `debian-13-slim-base`
-images exists by running:
-
-```
-$ podman image list
-REPOSITORY                       TAG         IMAGE ID      CREATED         SIZE
-localhost/debian-13-slim-base  latest      cb85902f99a6  57 minutes ago  139 MB
-docker.io/library/debian         13-slim     596c6d80c879  8 days ago      81.3 MB
-```
-
-### Creating a Container
-
-But that's not quite all there is to it - we still need to create a
-container, like this:
-
-```
-podman create -it debian-13-slim-base bash
-039cb1f886bee4f6cc718982bd81d64967c7437d31cb3412b269df6767e7cbe6
-```
-
-And verify that the container exists by running:
-
-```
-podman container list --all
-CONTAINER ID  IMAGE                                   COMMAND     CREATED             STATUS      PORTS       NAMES
-039cb1f886be  localhost/debian-13-slim-base:latest  bash        About a minute ago  Created                 zen_euler
-```
-
-### Running a Container
-
-Finally, we can start the container like this, and see if `python3` is
-installed and running ...
-
-```
-podman start -ai 039cb1
-root@039cb1f886be:/# python3
-Python 3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> exit()
-root@039cb1f886be:/#
-```
-
-Now, there are a number of shortcomings with this minimal example, not the least
-of which is that we are running as root. So let's get a little fancier and set
-things up more securely, and take advantage of mountable disk volumes to keep
-our containers well isolated.
+From this point forward, it's like having a new computer dedicated
+to a specific task. As long as you store your work under `~/projects`
+you can destroy the container and rebuild it without losing any work because
+it's stored in a volume separate from the container contents.
 
 ## Next Steps - Best Practices for Container Environments
 
-
-podman buildx build -t debian-13-slim-template     --build-arg USER_NAME=$USER                     devcontainers/debian-13-slim-template
-podman create -it   debian-13-slim-template /etc/devcontainer/postStartCommand 
-podman start -ai 19
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Now that we have verified a minimal container and image build, we
-can add some improvements that make our containers more secure and
-support working in containers as if they were our primary computer.
+can describe some of the practices that I have found to be helpful
+for my use cases.
 
-This is especially handy if you don't want to risk messing up your
-primary development machine while still having your `ssh` keys and `git`
-configuration acessible from the continer.
+You may have different needs for security or networking, so study
+the documentation for your container management system and review
+other sources to make the choices that are best for you.
 
-The first step is to slightly modify the base image by adding
-a non-root user that has passwordless `sudo` privileges. Of
-course, you can remove `sudo` access once your user has configured
-the container.
+I normally use a container as a dedicated computer with command-line
+shell access - connecting VSCodium to the container working with that
+as my IDE. Let's see how I make that as painless as possible.
 
-### Add A non-root User
+### Add A non-root User During Image Build
 
 The first thing we will do is add a non-root user, and install the `sudo`
-package. To make this script a bit more general, we have added a number
-of build-time arguments that can be overridden on the build command line.
+package. To make the `Containerfile` script a bit more general, we have added
+a number of build-time arguments that can be overridden on the build command line.
 
 ```
 ARG USER_NAME=debian
@@ -361,120 +350,99 @@ ARG USER_TZ=Etc/EST
 ARG USER_SHELL=/usr/bin/bash
 ```
 
-The defaults make it so the only thing we need to override on the
-command line is our username. Let's build the new image, create
-the container, and run it. Note that your container id will be different.
+The defaults make it so the only thing we need to override in the
+``container_variables.sh` file is the value of `container_user` to
+be used to override the default `USER_NAME`.
+
+You (or whichever `USER_NAME` you specified) are now the default user in
+the running container, and that you have passwordless `sudo` access. Use
+it appropriately!
+
+The container starts in the root (`/`) directory, which may not be convenient
+but we can change that in the `postAttachCommand` file. The remaining customizations
+are made at container creation time.
+
+### Configure `ssh` For The Container User
+
+My container setup adds a non-root user with my host username that has access
+to passwordless `sudo`. When I am using the container, I want to
+be able to access `git` and other tools that need `ssh` as if I was on my
+host machine.
+
+It's not a good idea to copy your private `~/.ssh` folder to a container
+because that becomes a permanent part of the container contents. Instead,
+I use an *overlay* mount to make my host user's `~/.ssh` folder available
+to my container user. The overlay feature allows me to make changes to things
+like the `known_hosts` or `authorized_keys` files in the container without
+changing them on the host. When the container exits, the contents of the
+overlay are lost. That means that any changes to the `~/.ssh` contents have to
+be made each time the container is started ... and we'll talk about that
+shortly.
+
+The `~/.ssh` overlay volume is configured by this line in the
+`container_variables.sh` file:
 
 ```
-podman buildx build -t debian-13-slim-base \
-                    -f Containerfile-0-non-root-user \
-                    --build-arg USER_NAME=$USER \
-                    path/to/debian-13-slim-base
-podman create -it debian-13-slim-base bash
-podman start -ai 2f42b57bc0
-
-username@2f42b57bc0cc:/$ sudo apt update
+container_volume_maps=( ... \
+                        "/home/${container_user}/.ssh:/home/${container_user}/.ssh:O" ) \
+                        ... )
 ```
 
-You will notice that you (or whichever `USER_NAME` you specified) are now
-the default user in the running container, and that you have passwordless
-`sudo` access. Use it appropriately!
+We're assuming that the `${container_user}` is the same on the host and
+container. If not, just change the volume map to reflect your use case.
 
-The container starts in the root (`\`) directory, which may not be convenient
-but we can change that in a later stage. The remaining customizations are made
-at container creation time.
+### Use Volume Mounts for Working Data
 
+You might want to update a container image by adding a missing package
+or changing how it is configured. It is easy to forget to back up
+your work outside of the container and only realize it after cleaning up
+or replacing the old container.
 
-### Renaming the Container
+To avoid this, it is highly recommended to use an external volume mount
+to hold workfiles. Note that this doesn't require you to repartition your
+hard drive to add a mount point - the volume exists as a single file
+that containers know how to mount and use.
 
-When you create a container, it gets a unique 64 character IDas
-well as a more human-readable name, like `blissful-panini`.
+This also keeps the size of your containers smaller - and you can mount
+the same volume on multiple containers simultaneously as long as you are
+careful about who gets read-only and write access.
 
-You cannot change the ID, but you can give the container whatever
-name you want when you create it. That's helpful if you are creating
-containers to run on a CI/CD build server and need to have well-known
-names so that your CI/CD pipeline commands don't have to change when
-you build a new container.
-
-
-af823bd1c2639834f98d0ba9d6a226a2c62267885b5ec5a5ed447309a0dabf7a
-Building a base image from the instructions above will result in
-an image with the name `ubuntu-xx.yy-embedded:latest`. The tag
-defaults to `latest`. But what if you want
-to change that name?
-
-The full name of an image is also called a tag, and you can create as
-many tags as you want for an image without using any more disk space.
-If you need more control over the tag process, refer to the
-[Docker CLI reference for `tag`][Docker tag] or
-[Podman CLI reference for `tag`][Podman tag].
-
-You rename/tag an image like this:
+The shared volume is configured by this line in the
+`container_variables.sh` file. You can adjust the name(s) of the volume(s)
+and the mount point(s) to suit your own needs.
 
 ```
-# Choose podman or docker depending on your containerization tool
-#
-docker image tag ubuntu-22.04-embedded some-new-name:some-new-tag
-podman image tag ubuntu-22.04-embedded some-new-name:some-new-tag
+container_volume_maps=( ... \
+                        "${container_tagname}-volume:/home/${container_user}/projects" \
+                        ... )
 ```
 
-Sometimes the orignal tag is a really long string, for example a VSCode
-devcontainer has a hash after the name.
-
-`vsc-container-name-614c6be1beb9a2a0db595c65c0d81774b6cd195b6092ff5ca691bd219d5caaa6:latest`
-
-That's not going to be fun, even with copy/paste. So we can substitute
-the Image ID for the name, which can be copied from the Docker Desktop
-Image tab, or from the command line:
-
-```
-docker image list
-podman image list
-
-REPOSITORY                      TAG    IMAGE ID     CREATED        SIZE
-ubuntu-22.04                    22.04  3b63e27dcd9f 31 minutes ago 2.24GB
-vsc-container-name-614c6be1b... latest 047565335b81 16 hours ago   2.25GB
-plantuml/plantuml-server        jetty  cba36f940161 6 weeks ago    483MB
-...
-```
-
-So making that VSCode Image more friendly looks like this:
-
-```
-# Choose podman or docker depending on your containerization tool
-#
-docker image tag 047565335b81 some-new-name:some-new-tag
-podman image tag 047565335b81 some-new-name:some-new-tag
-```
-
-## `apt` Pinning - Ensure Secure and Repeatable Images
+### `apt` Pinning - Ensure Secure and Repeatable Images
 
 One of the problems we are trying to solve with containers is a repeatable
 build environment. This can avoid "it works on my machine" problems and
 keeps the development team happy. It also keeps the legacy support team
 happy because they can recreate the build environment.
 
-This is true for as long as DockerHub is around, and for as long as
-the the Linux distro provides a package manager, and for as long
+This is true for as long as your container image repository is around, and
+for as long as the the Linux distro provides a package manager, and for as long
 as package maintainers keep the packages available.
 
 For this reason, it is HIGHLY recommended that your team keeps an
-archive of mission critical Docker/Podman images and containers somewhere
+archive of mission critical Podman images and containers somewhere
 safe. For more details on saving images read the
-[Docker CLI reference for `image save`][Docker image save]
-or the
 [Podman CLI reference for `image save`][Podman image save]
 
-The `Dockerfile` is where we specify which packages are to be added
-the base Ubuntu image - but how do we ensure that the package versions
+The `postCreateCommand` is where we specify which packages are to be added
+the base image - but how do we ensure that the package versions
 stay stable, and still receive security updates? The secret lies
 in [`apt` pinning][apt-pinning]
 
 We want to make sure that specific versions of the essential packages
-are retreived, but the Ubuntu LTS releases do provide security updates
-from time to time. In the past this meant updating the `Dockerfile` with
-more specific version strings, but now we encapsulate this in the
-`apt.preferences` file that is copied to `/etc/apt` in the image creation
+are retreived, but the Debian (or other Debian based distros) do provide
+security updates from time to time. In the past this meant updating the
+`Containerfile` with more specific version strings, but now we encapsulate
+this in the `apt.preferences` file that is copied to `/etc/apt` in the image creation
 step.
 
 A good example is the `ssh` package, it's at the heart of your container
@@ -483,206 +451,28 @@ network access security management. Here is the section from
 
 ```
 Package: ssh
-Pin: version 1:8.9*
+Pin: version 1:10.0*
 Pin-Priority: 1000
 ```
 
-This says that version `1:8.9` followed by any additional characters
+This says that version `1:10.0` followed by any additional characters
 will be installed. The whole point of the `apt` package manager is
 to keep your system up to date. Currently the preferred version of the
-`ssh` package for Ubuntu 22.04 (jammy) is:
+`ssh` package for Debian 13 is:
 
 ```
-jammy (22.04LTS) (net): secure shell client and server (metapackage)
-1:8.9p1-3ubuntu0.10 [security]: all
+trixie (stable) (net): secure shell client and server (metapackage)
+1:10.0p1-7+deb13u4: all
 ```
 
 When a security update is made, any old package versions are *deleted* from
 the Ubuntu package manager - this makes sense because you don't want to
 install a package version with a known security issue.
 
-As long as the Ubuntu Jammy package maintainers keep the version of
-`ssh` at `8.9` we are good. Ubuntu 22.04 LTS is by definition the Long Term
-Support version, so we can be confident that the version number of `ssh`
+As long as the Debian package maintainers keep the version of
+`ssh` at `1:10.0` we are good. Debian Trixie is the current stable
+release, so we can be confident that the version number of `ssh`
 is unlikely to change, except for security patches.
-
-## Podman Specific Setup for Windows
-
-There are two relatively simple changes required to be able to use
-Podman instead of Docker for your container management.
-
-### VSCode Support for Podman in the Remote Explorer Plugin
-
-The [VSCode Remote Explorer] plugin works together with the
-[VSCode DevContainer] plugin to give you visibility into your
-container infrastructure - you do not need the [VSCode Docker] plugin
-to get this functionality.
-
-The [VSCode DevContainer] plugin assumes that your default container management
-tool is Docker. Thanks to the Podman team deciding to use the same command-line
-interface as Docker, we can simply set the name of the container management
-executable.
-
-Go to Settings -> Dev -> Containers -> DockerPath and set the
-field to "podman"
-
-Or, just add this to your `settings.json`:
-
-```
-"dev.containers.dockerPath": "podman",
-```
-
-Restart VSCode and now your Remote Explorer plugin will call `podman`
-to show you all of your container assets, and the DevContiner plugin
-will use `podman` to start, stop, and rebuild containers.
-
-### Podman Container -> Host Networking in Windows
-
-CHANGE "path\to\user\.wslconfig":
-
-[wsl2]
-autoProxy=false
-dnsTunneling=true
-
-ON WINDOWS, container and machine config is here:
-
-C:\Users\HempelRa\AppData\Roaming\containers
-
-
-The Podman network name resolution works differently than Docker, so
-we will need to do some one-time configuration to get around it.
-
-Each Podman machine (there is typically only one) gets a unique IP
-address, and you can retreive it from a PowerShell session (your IP
-address will be different):
-
-```
-Get-NetIpAddress | where { $_.InterfaceAlias -Like '*WSL*' -and $_.AddressFamily -EQ 'IPv4' } | select -ExpandProperty IPAddress
-172.17.32.1
-```
-
-or from `cmd`:
-
-```
-powershell -command "Get-NetIpAddress | where { $_.InterfaceAlias -Like '*WSL*' -and $_.AddressFamily -EQ 'IPv4' } | select -ExpandProperty IPAddress"
-
-```
-
-Now start your Podman machine:
-
-```
-wsl --distribution podman-machine-default
-```
-
-and edit (using `sudo vi`) the `/etc/containers/containers.conf` file
-to add this line in the `[containers]` section. This will allow
-`host.containers.internal` to resolve to the IP address that the
-host presents to `podman-machine-default` - of course your IP
-address will be different.
-
-```
-host_containers_internal_ip = "172.17.32.1"
-```
-
-It turns out that you can use additional hostnames if you already have
-devcontainer files that use a different hostname. For example, in my
-devcontainers for embedded developemnt, I run [OpenOCD] and connect
-to it from the container using the name `host.gdb.gateway`. So the
-`[containers]` section of my `/etc/containers/containers.conf` looks
-like this:
-
-```
-[containers]
-host_containers_internal_ip = "172.17.32.1"
-host_docker_internal_ip = "172.17.32.1"
-host_gdb_gateway_ip = "172.17.32.1"
-```
-
-To translate your IP name to the corresponding variable name in the `[containers]` section, just replace the "." with "_" and add "_ip".
-
-Remember to restart your Podman machine after making any changes:
-
-```
-podman machine stop
-podman machine start
-```
-
-Thanks to [StackOverflow user Anton][StackOverflow Anton] for
-[this StackOverflow solution for Podman host networking support][podman host networking].
-
-## Troubleshooting Build Issues
-
-Sometimes the image won't build. Here are a few common failures:
-
-### Failure to Download Packages
-
-We are building on the official Ubuntu images from DockerHub, and in
-turn those images will update packages from other servers. Sometimes
-those servers are down, in which case trying later helps.
-
-If you are using an externally managed computer, then VPN or other
-network settings may be preventing access to certain IP addresses. Consult
-your provider for instructions on how to proceed to access external
-IP addresses.
-
-For example, you might run into trouble downloading the `plantuml` file
-from `github.com`:
-
-```
-0.570 Resolving objects.githubusercontent.com ...
-0.630 Connecting to objects.githubusercontent.com ...
-0.795 ERROR: cannot verify objects.githubusercontent.com's certificate ...
-0.795   Unable to locally verify the issuer's authority.
-0.795 To connect to objects.githubusercontent.com insecurely, use `--no-check-certificate'.                             -
-```
-
-Yeah, don't start modifying the `Dockerfile` - the problem is most likely
-your network settings. In my case I just had to (temporarliy) disable the
-`ZScaler` Internet Security setting on my managed laptop. Note that it
-was still on the VPN and that our organization sets a timeout so that
-if you forget to turn it back on you are still safe.
-
-### Cache Confusion
-
-Having a cache of previously created container layers really helps to
-speed up container construction - but sometimes the cache works against
-you. One way around this is to force a build without the cache:
-
-```
-# Choose podman or docker depending on your containerization tool
-#
-docker buildx build --no-cache -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded-docker
-podman buildx build --no-cache -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded-docker
-```
-
-As an absolute last resort, you can consider clearing out your entire
-Docker cache - this can actually free up quite a bit of disk space, but you
-will slow down any subsequent container builds until the cache is refilled.
-
-```
-docker buildx prune -f
-```
-
-Podman users will need to manage unused images, containers, and volumes either
-with the GUI or command lines.
-
-
-:exclamation: If you are using Podman, then you will need to make a
-few adjustments to be able to use the VSCode Docker support plugin and to
-connect from the container to a network port on the host machine. This
-is described in [Podman Specific Setup for Windows](#Podman-Specific-Setup-for-Windows)
-near the end of this document.
-
-
-
-
-
-
-
-## More Detailed Information
-
-Managing users in rootless mode
-https://medium.com/@guillem.riera/making-visual-studio-code-devcontainer-work-properly-on-rootless-podman-8d9ddc368b30
 
 [Docker]: https://docs.docker.com
 [Podman]: https://podman.io/

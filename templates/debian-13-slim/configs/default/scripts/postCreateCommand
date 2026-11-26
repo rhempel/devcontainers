@@ -15,6 +15,4 @@ apt install --no-install-recommends -y \
     ca-certificates \
     tzdata \
     locales \
-    git \
     ssh \
-    vim

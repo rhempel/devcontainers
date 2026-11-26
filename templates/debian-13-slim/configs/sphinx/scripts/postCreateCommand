@@ -29,15 +29,12 @@ apt install --no-install-recommends -y \
     vim \
     wget
 
-# RUN wget -P /opt -x -nH --cut-dirs=1 \
-#     https://github.com/plantuml/plantuml/releases/download/v1.2025.9/plantuml-1.2025.9.jar \
-#  && ln -s /opt/plantuml/releases/download/v1.2025.9/plantuml-1.2025.9.jar /opt/plantuml/plantuml.jar
-# 
-# # Prepare to install all the additional Python packages
-# #
+wget -P /opt -x -nH --cut-dirs=1 \
+     https://github.com/plantuml/plantuml/releases/download/v1.2026.10/plantumlv1.2026.10.jar \
+  && ln -s /opt/plantuml/releases/download/v1.2026.10/plantuml-v1.2026.10.jar /opt/plantuml/plantuml.jar
+
+# Prepare to install all the additional Python packages
+#
 # COPY requirements.txt /tmp/requirements.txt
 
-# this_user=$1
-#
-# sudo chown "$this_user" /home/"$this_user"/projects
-# sudo ln -sf /usr/bin/python3 /usr/bin/python
+sudo ln -sf /usr/bin/python3 /usr/bin/python

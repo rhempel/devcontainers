@@ -19,18 +19,19 @@ Usage: ${0##*/} [options]
 
 Create a container instance according to a configuration file.
 
+  -t|--template       Container template folder name - default is "debian-13-slim"
   -c|--config CONFIG  Configuration to use - default is "default"
   -r|--replace        Replace the container instance if one already exists
   -h|--help|\-?       Show this help text and exit
-  --test)             Dry run - print the generated podman command line
+  --test              Dry run - print the generated podman command line
 EOF
 }
 
-create_container_test_run=""
+test_run=""
 
 run () {
-    if [ "${create_container_test_run}" ]; then
-      echo "create_container: $*"
+    if [ "${test_run}" ]; then
+      echo "${0##*/}: $*"
     else 
       eval "$@"
     fi
@@ -50,33 +51,43 @@ create_container_options () {
 }
 
 create_container () {
-  source $(dirname ${BASH_SOURCE[0]})/../../configs/"${create_container_config_file}"
+  # Set reasonable defaults for key variables
+  # 
+  container_basename="${create_container_template_folder:-debian-13-slim}"
+  container_tagname="${create_container_config_folder:-default}"
+  container_user="${container_user:-${USER}}"
 
-  container_user="${container_user}"
-  container_image="${container_basename}":"${container_tagname}"
-  container_name="${container_basename}"-"${container_tagname}"
-  container_config="${container_tagname}"
+  # Build up the path for the container configuration template
+  #
+  create_container_template_path="$(dirname ${BASH_SOURCE[0]})/../.."
+  create_container_template_path+="/templates/${create_container_template_folder}"
+  create_container_template_path+="/configs/${create_container_config_folder}"
 
-  container_hosts=$(create_container_options "add-host" create_container_host_maps)
-  container_volumes=$(create_container_options "volume" create_container_volume_maps)
-  container_publish=$(create_container_options "publish" create_container_port_maps)
+  source "${create_container_template_path}/container_variables.sh"
+
+  # Create additional command line options for the container instance
+  #
+  container_hosts=$(create_container_options "add-host" container_host_maps)
+  container_volumes=$(create_container_options "volume" container_volume_maps)
+  container_publish=$(create_container_options "publish" container_port_maps)
 
   run podman create -it "${create_container_replace}" \
-                        --name="${container_name}" \
+                        --name="${container_basename}"-"${container_tagname}" \
                         "${container_hosts}" \
                         "${container_volumes}" \
                         "${container_publish}" \
-                        "${container_image}" \
+                        "${container_basename}":"${container_tagname}" \
                         /etc/devcontainer/postStartCommand 
 }
 
 main () {
   while [[ "$#" -gt 0 ]]; do
     case $1 in
-      -c|--config)   create_container_config_file="$2"; shift ;;
+      -t|--template) create_container_template_folder="$2"; shift ;;
+      -c|--config)   create_container_config_folder="$2"; shift ;;
       -r|--replace)  create_container_replace="--replace" ;;
       -h|--help|-\?) show_help; return 0 ;;
-      --test)        create_container_test_run="y" ;;
+      --test)        test_run="y" ;;
       *)             echo "Unknown parameter passed: $1"; return 1 ;;
     esac
     shift

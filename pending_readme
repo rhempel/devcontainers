@@ -1,0 +1,322 @@
+## Podman Specific Setup for Windows
+
+There are two relatively simple changes required to be able to use
+Podman instead of Docker for your container management.
+
+### VSCode Support for Podman in the Remote Explorer Plugin
+
+The [VSCode Remote Explorer] plugin works together with the
+[VSCode DevContainer] plugin to give you visibility into your
+container infrastructure - you do not need the [VSCode Docker] plugin
+to get this functionality.
+
+The [VSCode DevContainer] plugin assumes that your default container management
+tool is Docker. Thanks to the Podman team deciding to use the same command-line
+interface as Docker, we can simply set the name of the container management
+executable.
+
+Go to Settings -> Dev -> Containers -> DockerPath and set the
+field to "podman"
+
+Or, just add this to your `settings.json`:
+
+```
+"dev.containers.dockerPath": "podman",
+```
+
+Restart VSCode and now your Remote Explorer plugin will call `podman`
+to show you all of your container assets, and the DevContiner plugin
+will use `podman` to start, stop, and rebuild containers.
+
+### Podman Container -> Host Networking in Windows
+
+CHANGE "path\to\user\.wslconfig":
+
+[wsl2]
+autoProxy=false
+dnsTunneling=true
+
+ON WINDOWS, container and machine config is here:
+
+C:\Users\HempelRa\AppData\Roaming\containers
+
+
+The Podman network name resolution works differently than Docker, so
+we will need to do some one-time configuration to get around it.
+
+Each Podman machine (there is typically only one) gets a unique IP
+address, and you can retreive it from a PowerShell session (your IP
+address will be different):
+
+```
+Get-NetIpAddress | where { $_.InterfaceAlias -Like '*WSL*' -and $_.AddressFamily -EQ 'IPv4' } | select -ExpandProperty IPAddress
+172.17.32.1
+```
+
+or from `cmd`:
+
+```
+powershell -command "Get-NetIpAddress | where { $_.InterfaceAlias -Like '*WSL*' -and $_.AddressFamily -EQ 'IPv4' } | select -ExpandProperty IPAddress"
+
+```
+
+Now start your Podman machine:
+
+```
+wsl --distribution podman-machine-default
+```
+
+and edit (using `sudo vi`) the `/etc/containers/containers.conf` file
+to add this line in the `[containers]` section. This will allow
+`host.containers.internal` to resolve to the IP address that the
+host presents to `podman-machine-default` - of course your IP
+address will be different.
+
+```
+host_containers_internal_ip = "172.17.32.1"
+```
+
+It turns out that you can use additional hostnames if you already have
+devcontainer files that use a different hostname. For example, in my
+devcontainers for embedded developemnt, I run [OpenOCD] and connect
+to it from the container using the name `host.gdb.gateway`. So the
+`[containers]` section of my `/etc/containers/containers.conf` looks
+like this:
+
+```
+[containers]
+host_containers_internal_ip = "172.17.32.1"
+host_docker_internal_ip = "172.17.32.1"
+host_gdb_gateway_ip = "172.17.32.1"
+```
+
+To translate your IP name to the corresponding variable name in the `[containers]` section, just replace the "." with "_" and add "_ip".
+
+Remember to restart your Podman machine after making any changes:
+
+```
+podman machine stop
+podman machine start
+```
+
+Thanks to [StackOverflow user Anton][StackOverflow Anton] for
+[this StackOverflow solution for Podman host networking support][podman host networking].
+
+## Troubleshooting Build Issues
+
+Sometimes the image won't build. Here are a few common failures:
+
+### Failure to Download Packages
+
+We are building on the official Ubuntu images from DockerHub, and in
+turn those images will update packages from other servers. Sometimes
+those servers are down, in which case trying later helps.
+
+If you are using an externally managed computer, then VPN or other
+network settings may be preventing access to certain IP addresses. Consult
+your provider for instructions on how to proceed to access external
+IP addresses.
+
+For example, you might run into trouble downloading the `plantuml` file
+from `github.com`:
+
+```
+0.570 Resolving objects.githubusercontent.com ...
+0.630 Connecting to objects.githubusercontent.com ...
+0.795 ERROR: cannot verify objects.githubusercontent.com's certificate ...
+0.795   Unable to locally verify the issuer's authority.
+0.795 To connect to objects.githubusercontent.com insecurely, use `--no-check-certificate'.                             -
+```
+
+Yeah, don't start modifying the `Dockerfile` - the problem is most likely
+your network settings. In my case I just had to (temporarliy) disable the
+`ZScaler` Internet Security setting on my managed laptop. Note that it
+was still on the VPN and that our organization sets a timeout so that
+if you forget to turn it back on you are still safe.
+
+### Cache Confusion
+
+Having a cache of previously created container layers really helps to
+speed up container construction - but sometimes the cache works against
+you. One way around this is to force a build without the cache:
+
+```
+# Choose podman or docker depending on your containerization tool
+#
+docker buildx build --no-cache -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded-docker
+podman buildx build --no-cache -t ubuntu-xx.yy-embedded path/to/ubuntu-xx.yy-embedded-docker
+```
+
+As an absolute last resort, you can consider clearing out your entire
+Docker cache - this can actually free up quite a bit of disk space, but you
+will slow down any subsequent container builds until the cache is refilled.
+
+```
+docker buildx prune -f
+```
+
+Podman users will need to manage unused images, containers, and volumes either
+with the GUI or command lines.
+
+
+:exclamation: If you are using Podman, then you will need to make a
+few adjustments to be able to use the VSCode Docker support plugin and to
+connect from the container to a network port on the host machine. This
+is described in [Podman Specific Setup for Windows](#Podman-Specific-Setup-for-Windows)
+near the end of this document.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ============================================================================
+# We are now ready to begin building a base image that can be used to
+# build a devcontainer. Why use base images? Mainly to speed up the
+# creation of multiple devcontainers using a common base image and to
+# avoid duplication.
+# 
+# For example, I do embedded systems development in C, and also
+# tasks like writing for my website or 3D modelling that use
+# Python but don't need the C compiler. It makes sense to have
+# two base images, one for embedded development and one for Python.
+# I can then quickly create a task-specific devcontainer with just a few
+# additions.
+# 
+# Containers are awesome tools to simplify your development process. To
+# learn more about how they work, I can recommend [this 'zine by Julia
+# Evans][how-containers-work].
+# 
+# If you have ever wondered how containers get their default names, then
+# [this file][container-names] will be interesting.
+# 
+# ### Starting a Base Image Build
+============================================================================= -->
+
+Docker and Podman have almost identical command lines. This is by design as
+Podman came after Docker. Rather than develop yet another _almost_ compatible
+command line, the Podman team wisely chose to simply duplicate the semantics
+of Docker. They even went so far as to be able to read the Dockerfile format.
+
+| Environment | Version | Notes |
+| -           | - | - |
+| Docker      | 4.32.0+ | The traditional `build` command is now legacy, so we use `buildx` instead. If you need more control over the process, refer to the [Docker CLI reference for `buildx`][Docker buildx].
+| Podman      | 1.16.2+ | Podman also supports `buildx` - but not all of the features from Docker are available. [Podman CLI reference for `build`][Podman build].
+
+:exclamation: From this point forward we will only refer to Podman, but
+Docker should support pretty much the same command lines and Dockerfiles.
+
+:exclamation: I prefer to use Debian images, but of course you can use whatever
+Linux distribution you want for the base of the container. You may need to
+modify some of the `RUN` commands.
+
+:exclamation: I'm assuming that you have `git clone`d this repository and can
+navigate to it on your host in the next step. On Windows, you will need to use
+the `\` as a path separator.
+
+:exclamation: The command lines assume a Linux or MacOS environment, for Windows
+you will need to change the path separator as well as the line continuation
+character.
+
+### Starting an Image Build
+
+The simplest way to kick off the build of a new image is:
+
+```
+cd path/to/debian-13-slim-base
+podman buildx build -f Containerfile -t debian-13-slim-base .
+
+NOTE: Don't forget the trailing "."
+```
+
+If you want to avoid changing to the directory where the `Dockerfile`
+lives, you can just do this:
+
+```
+podman buildx build -t debian-13-slim-base path/to/debian-13-slim-base
+```
+
+Depending on network and computer speed, the build time will vary. On my
+machine it's about a minute without the cache - and just a few seconds with
+the cache.
+
+You can verify that the `Debian 13 (slim)` and our new `debian-13-slim-base`
+images exists by running:
+
+```
+$ podman image list
+REPOSITORY                       TAG         IMAGE ID      CREATED         SIZE
+localhost/debian-13-slim-base  latest      cb85902f99a6  57 minutes ago  139 MB
+docker.io/library/debian         13-slim     596c6d80c879  8 days ago      81.3 MB
+```
+
+### Creating a Container
+
+But that's not quite all there is to it - we still need to create a
+container, like this:
+
+```
+podman create -it debian-13-slim-base bash
+039cb1f886bee4f6cc718982bd81d64967c7437d31cb3412b269df6767e7cbe6
+```
+
+And verify that the container exists by running:
+
+```
+podman container list --all
+CONTAINER ID  IMAGE                                   COMMAND     CREATED             STATUS      PORTS       NAMES
+039cb1f886be  localhost/debian-13-slim-base:latest  bash        About a minute ago  Created                 zen_euler
+```
+
+### Running a Container
+
+Finally, we can start the container like this, and see if `python3` is
+installed and running ...
+
+```
+podman start -ai 039cb1
+root@039cb1f886be:/# python3
+Python 3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> exit()
+root@039cb1f886be:/#
+```
+
+Now, there are a number of shortcomings with this minimal example, not the least
+of which is that we are running as root. So let's get a little fancier and set
+things up more securely, and take advantage of mountable disk volumes to keep
+our containers well isolated.
+
+
+
+
+## More Detailed Information
+
+Managing users in rootless mode
+https://medium.com/@guillem.riera/making-visual-studio-code-devcontainer-work-properly-on-rootless-podman-8d9ddc368b30
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

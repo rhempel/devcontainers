@@ -1,6 +1,4 @@
 # -----------------------------------------------------------------------------
-container_basename="debian-13-slim"
-container_tagname="default"
 container_user=${USER}
 
 container_port_maps=("127.0.0.1:22002:22")

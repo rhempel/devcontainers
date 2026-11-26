@@ -37,7 +37,7 @@ chmod 700 .ssh
 chmod 600 .ssh/*
 chmod 644 .ssh/*.pub
 
-# Create the authorized_keys file , then append the keys that
+# Create the authorized_keys file, then append the keys that
 # you want to authorize for this container.
 #
 (umask 177 && touch -c .ssh/authorized_keys)

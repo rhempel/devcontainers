@@ -22,7 +22,7 @@ ARG CONTAINER_CONFIG=default
 # Copy files that will help while we are configuring the container
 #
 COPY etc/apt  /etc/apt
-COPY --chmod=755 etc/devcontainer/${CONTAINER_CONFIG} /etc/devcontainer
+COPY --chmod=755 configs/${CONTAINER_CONFIG}/scripts /etc/devcontainer
 
 # Add all of the packages useful for the tasks this image will
 # be used for.

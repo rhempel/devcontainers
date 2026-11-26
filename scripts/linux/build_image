@@ -20,42 +20,43 @@ Usage: ${0##*/} [options]
 Build a customized container image that can be used to create a container
 instance.
 
-  -c|--config CONFIG  Configuration to use
+  -t|--template       Container template folder name - default is "debian-13-slim"
+  -c|--config CONFIG  Configuration to use - default is "default"
   -h|--help|\-?       Show this help text and exit
   --test              Dry run - print the generated podman command line
 EOF
 }
 
-build_image_test_run=""
+test_run=""
 
 run () {
-    if [ "${build_image_test_run}" ]; then
-      echo "build_image: $*"
+    if [ "${test_run}" ]; then
+      echo "${0##*/}: $*"
     else 
       eval "$@"
     fi
 }
 
 build_image () {
-  source $(dirname ${BASH_SOURCE[0]})/../../configs/"${build_image_config_file}"
+  # Set reasonable defaults for key variables
+  # 
+  container_basename="${build_image_template_folder:-debian-13-slim}"
+  container_tagname="${build_image_config_folder:-default}"
+  container_user="${container_user:-${USER}}"
 
-  build_image_user="${container_user}"
-  build_image_tag="${container_basename}":"${container_tagname}"
-  build_image_template="${container_basename}"
-  build_image_config="${container_tagname}"
-
-  run podman buildx build -t "${build_image_tag}" \
-                          --build-arg USER_NAME=${build_image_user} \
-                          --build-arg CONTAINER_CONFIG=${build_image_config} \
-                          devcontainers/templates/"${build_image_template}"
+  run podman buildx build -t "${container_basename}":"${container_tagname}" \
+                          --build-arg USER_NAME="${container_user}"\
+                          --build-arg CONTAINER_CONFIG="${container_tagname}" \
+                          devcontainers/templates/"${container_basename}"
 }
 
 main () {
   while [[ "$#" -gt 0 ]]; do
     case $1 in
-      -c|--config)   build_image_config_file="$2"; shift ;;
+      -t|--template) build_image_template_folder="$2"; shift ;;
+      -c|--config)   build_image_config_folder="$2"; shift ;;
       -h|--help|-\?) show_help; return 0 ;;
-      --test)        build_image_test_run="y" ;;
+      --test)        test_run="y" ;;
       *)             echo "Unknown parameter passed: $1"; return 1 ;;
     esac
     shift

@@ -47,7 +47,7 @@ build_image () {
   run podman buildx build -t "${container_basename}":"${container_tagname}" \
                           --build-arg USER_NAME="${container_user}"\
                           --build-arg CONTAINER_CONFIG="${container_tagname}" \
-                          devcontainers/templates/"${container_basename}"
+                          "$(dirname "$0")"/../../templates/"${container_basename}"
 }
 
 main () {

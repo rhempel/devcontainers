@@ -51,6 +51,7 @@ RUN apt update \
         picolibc-arm-none-eabi \
         gdb-multiarch \
         binutils-multiarch-dev \
+        picotool \
         python3-clang \
         python3-pip \
         python3-sphinx \

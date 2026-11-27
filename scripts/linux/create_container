@@ -71,7 +71,7 @@ create_container () {
   container_volumes=$(create_container_options "volume" container_volume_maps)
   container_publish=$(create_container_options "publish" container_port_maps)
 
-  run podman create -it "${create_container_replace}" \
+  run podman create -it --userns=keep-id "${create_container_replace}" \
                         --name="${container_basename}"-"${container_tagname}" \
                         "${container_hosts}" \
                         "${container_volumes}" \
